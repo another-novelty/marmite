@@ -1,0 +1,78 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreMiteAccessRequest;
+use App\Http\Requests\UpdateMiteAccessRequest;
+use App\Models\MiteAccess;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+
+class MiteAccessController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        return Auth::user()->miteAccesses->toResource();
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreMiteAccessRequest $request)
+    {
+        $miteAccess = new MiteAccess($request->validated());
+        $miteAccess->user_id = Auth::id();
+        $miteAccess->save();
+
+        return Redirect::route('profile.edit');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(MiteAccess $miteAccess)
+    {
+        return inertia('MiteAccess/Show', [
+            'miteAccess' => $miteAccess->toResource(),
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(MiteAccess $miteAccess)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateMiteAccessRequest $request, MiteAccess $miteAccess)
+    {
+        $miteAccess->update($request->validated());
+
+        return Redirect::route('profile.edit');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(MiteAccess $miteAccess)
+    {
+        $miteAccess->delete();
+
+        return Redirect::route('profile.edit');
+    }
+}
