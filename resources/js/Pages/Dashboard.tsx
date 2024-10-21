@@ -1,11 +1,11 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import { useState, useCallback } from 'react';
+import { useCallback, ChangeEvent } from 'react';
 
 export default function Dashboard({ auth , hasMiteAccess, miteApiKeys}: PageProps<{hasMiteAccess: boolean, miteApiKeys: {id: string, access_token: string}[]}>) {
 
-    const gotToCalendar = useCallback((e) => {
+    const gotToCalendar = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
         e.preventDefault();
         if (e.target.value) {
             const mite_access_id = e.target.value;
