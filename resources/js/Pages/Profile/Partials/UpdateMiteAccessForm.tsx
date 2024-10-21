@@ -6,15 +6,15 @@ import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
 
-function MiteEntry({accessToken: accessToken, id, placeholder, className = ''}: {accessToken: string, id: string, placeholder?: string, className?: string}) {
+function MiteEntry({accessToken: accessToken, id, name, placeholder, className = ''}: {accessToken: string, id: string, name: string, placeholder?: string, className?: string}) {
     const { data, setData, errors, put, post, reset, processing, recentlySuccessful, delete: destroy} = useForm({
         access_token: accessToken,
         id: id,
+        name: name,
     });
     
     const updateAcessToken: FormEventHandler = (e) => {
         e.preventDefault();        
-
         if (id){
             put(route('mite-accesses.update', data.id), {
                 preserveScroll: true,
@@ -31,7 +31,8 @@ function MiteEntry({accessToken: accessToken, id, placeholder, className = ''}: 
                     console.log(errors);
                 },
                 data: {
-                    access_token: data.access_token
+                    access_token: data.access_token,
+                    name: data.name
                 }
             });
         }
@@ -50,8 +51,8 @@ function MiteEntry({accessToken: accessToken, id, placeholder, className = ''}: 
     }
 
     const changed = useMemo(() => {
-        return (data.access_token !== accessToken)
-    }, [data.access_token, accessToken]);
+        return (data.access_token !== accessToken || data.name !== name);
+    }, [data.access_token, accessToken, data.name, name]);
 
     return (
         <form 
@@ -68,13 +69,27 @@ function MiteEntry({accessToken: accessToken, id, placeholder, className = ''}: 
                 autoComplete='off'
                 autoCorrect='off'
             />
+            <TextInput 
+                type="hidden"
+                name="id"
+                value={data.id}
+            />
+            <TextInput
+                type="text"
+                name="name"
+                className="mt-1 flex-1"
+                onChange={(e) => setData('name', e.target ? e.target.value : '')}
+                value={data.name}
+                placeholder="Give it a name"
+                autoComplete='off'
+            />
             {changed && <PrimaryButton disabled={processing} onClick={updateAcessToken}>Save</PrimaryButton>}
             {id && <PrimaryButton disabled={processing} onClick={removeAcessToken}>Delete</PrimaryButton>}
         </form>
     );
 }
 
-export default function UpdateMiteAccessForm({accessTokens, className = '' }: {accessTokens: {id: string, access_token: string}[], className?: string }) {
+export default function UpdateMiteAccessForm({accessTokens, className = '' }: {accessTokens: {id: string, access_token: string, name: string}[], className?: string }) {
 
     console.log(accessTokens);
     
@@ -88,11 +103,11 @@ export default function UpdateMiteAccessForm({accessTokens, className = '' }: {a
             <div className="mt-6 space-y-6">
 
                 { accessTokens.map((token, index) => (
-                    <MiteEntry key={index} accessToken={token.access_token} id={token.id} placeholder={token.access_token} />
+                    <MiteEntry key={index} accessToken={token.access_token} id={token.id} name={token.name} placeholder={token.access_token} />
                 ))
                 }
 
-                <MiteEntry accessToken="" id="" placeholder="Add new access token"/>
+                <MiteEntry accessToken="" id="" name='' placeholder="Add new access token"/>
             </div>
         </section>
     );

@@ -6,6 +6,7 @@ use App\Http\Requests\StoreMiteAccessRequest;
 use App\Http\Requests\UpdateMiteAccessRequest;
 use App\Models\MiteAccess;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 
 class MiteAccessController extends Controller
@@ -23,7 +24,7 @@ class MiteAccessController extends Controller
      */
     public function create()
     {
-        //
+        return Redirect::route('profile.edit');
     }
 
     /**
@@ -53,7 +54,7 @@ class MiteAccessController extends Controller
      */
     public function edit(MiteAccess $miteAccess)
     {
-        //
+        return Redirect::route('profile.edit');
     }
 
     /**

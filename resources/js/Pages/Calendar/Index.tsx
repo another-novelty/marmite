@@ -3,13 +3,15 @@ import { Head } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useState } from 'react';
 
-export default function Dashboard({ auth , miteAPIKey}: PageProps<{miteAPIKey: {id: string, access_token: string}}>) {
+export default function Calendar({ auth , miteAPIKey, projects}: PageProps<{miteAPIKey: {id: string, name: string}, projects: any}>) {
     console.log(miteAPIKey);
+    
+    console.log(projects);
     
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Calendar {miteAPIKey.access_token}</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Calendar {miteAPIKey.name}</h2>}
         >
             <Head title="Calendar" />
 

@@ -31,4 +31,7 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'mite' => [
+        'base_url' => env('MITE_BASE_URL'),
+    ],
 ];

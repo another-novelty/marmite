@@ -48,4 +48,16 @@ class User extends Authenticatable
     public function miteAccesses() {
         return $this->hasMany(MiteAccess::class);
     }
+
+    public function services() {
+        return $this->hasMany(Service::class);
+    }
+
+    public function customers() {
+        return $this->hasMany(Customer::class);
+    }
+
+    public function projects() {
+        return $this->hasManyThrough(Project::class, Customer::class);
+    }
 }
