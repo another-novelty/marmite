@@ -29,16 +29,6 @@ class Project extends Model
         'last_synced_at',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-        Uuid::boot();
-
-        static::addGlobalScope('active', function ($query) {
-            $query->where($query->getModel()->getTable() . '.archived', false);
-        });
-    }
-
     public function customer()
     {
         return $this->belongsTo(Customer::class);
@@ -54,10 +44,21 @@ class Project extends Model
         return new Project(
             [
                 'mite_id' => $mite_data['id'],
+                'customer_id' => Customer::where('mite_id', $mite_data['customer_id'])->first()->id,
                 'name' => $mite_data['name'],
                 'note' => $mite_data['note'],
                 'archived' => $mite_data['archived'],
             ]
         );
+    }
+
+    public function toMite(): array
+    {
+        return [
+            'id' => $this->mite_id,
+            'name' => $this->name,
+            'note' => $this->note,
+            'customer_id' => $this->customer->mite_id,
+        ];
     }
 }

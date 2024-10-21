@@ -29,17 +29,6 @@ class Customer extends Model
         'last_synced_at',
     ];
 
-    // protected static function boot()
-    // {
-    //     parent::boot();
-
-    //     Uuid::boot();
-
-    //     static::addGlobalScope('active', function ($query) {
-    //         $query->where($query->getModel()->getTable() . '.archived', false);
-    //     });
-    // }
-
     public function projects()
     {
         return $this->hasMany(Project::class);

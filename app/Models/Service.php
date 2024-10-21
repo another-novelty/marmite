@@ -30,16 +30,6 @@ class Service extends Model
         'last_synced_at',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-        Uuid::boot();
-
-        static::addGlobalScope('active', function ($query) {
-            $query->where($query->getModel()->getTable() . '.archived', false);
-        });
-    }
-
     public function entries()
     {
         return $this->hasMany(Entry::class);
@@ -60,5 +50,15 @@ class Service extends Model
                 'archived' => $mite_data['archived'],
             ]
         );
+    }
+
+    public function toMite(): array
+    {
+        return [
+            'id' => $this->mite_id,
+            'name' => $this->name,
+            'note' => $this->note,
+            'archived' => $this->archived,
+        ];
     }
 }
