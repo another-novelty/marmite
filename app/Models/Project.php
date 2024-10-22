@@ -39,12 +39,12 @@ class Project extends Model
         return $this->hasMany(Entry::class);
     }
 
-    public static function fromMite($mite_data)
+    public static function fromMite($mite_data, MiteAccess $miteAccess): Project
     {
         return new Project(
             [
                 'mite_id' => $mite_data['id'],
-                'customer_id' => Customer::where('mite_id', $mite_data['customer_id'])->first()->id,
+                'customer_id' => Customer::where('mite_id', $mite_data['customer_id'])->where('mite_access_id', $miteAccess->id)->first()->id,
                 'name' => $mite_data['name'],
                 'note' => $mite_data['note'],
                 'archived' => $mite_data['archived'],

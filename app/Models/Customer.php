@@ -44,7 +44,7 @@ class Customer extends Model
         return $this->hasManyThrough(Entry::class, Project::class);
     }
 
-    public static function fromMite($mite_data)
+    public static function fromMite($mite_data, MiteAccess $miteAccess): Customer
     {
         // create a new customer from json data
         return new Customer(

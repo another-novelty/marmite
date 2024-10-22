@@ -28,7 +28,7 @@ trait HasMiteSync
         return 'App\Models\\' . class_basename($this);
     }
 
-    abstract public static function fromMite($mite_data);
+    abstract public static function fromMite($mite_data, MiteAccess $miteAccess);
     abstract public function toMite(): array;
 
     public static function miteResourceName(bool $plural = false): string
@@ -60,7 +60,7 @@ trait HasMiteSync
         return $query->where('last_synced_at', '>=', now()->startOfDay());
     }
 
-    public static function miteGetAll(MiteAccess $miteAccess, $query = null)
+    public static function miteGetAll(MiteAccess $miteAccess, $query = [])
     {
         $mite = $miteAccess->mite();
 
@@ -69,23 +69,27 @@ trait HasMiteSync
         $response = $mite->get($endpoint, $query);
         
         if (array_key_exists('error', $response)) {
-            throw new \Exception($response->get('error'));
+            throw new \Exception($response['error']);
         }
         
-        $objects = [];
+        $objects = collect();
         
         // iterate over all entries in the response
         // and create a new model instance for each entry
         foreach ($response as $miteData) {
             $miteData = $miteData[static::miteResourceName()];
 
-            $model = static::fromMite($miteData);
-            $model->mite_access_id = $miteAccess->id;
+            $model = static::fromMite($miteData, $miteAccess);
             $model->last_sync_at = now();
 
-            $objects[] = $model;
+            $objects->push($model);
         }
 
         return $objects;
+    }
+
+    public static function getMiteQuery(MiteAccess $miteAccess, $query)
+    {
+        return $query;
     }
 }

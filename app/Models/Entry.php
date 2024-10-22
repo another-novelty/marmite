@@ -16,7 +16,7 @@ class Entry extends Model
         'mite_id',
         'project_id',
         'service_id',
-        'date',
+        'date_at',
         'minutes',
         'note',
         'locked',
@@ -38,13 +38,16 @@ class Entry extends Model
         return $this->belongsTo(Service::class);
     }
 
-    public static function fromMite($mite_data)
+    public static function fromMite($mite_data, MiteAccess $miteAccess): Entry
     {
+        $customer = Customer::where('mite_id', $mite_data['customer_id'])->where('mite_access_id', $miteAccess->id)->first();
+        $project = Project::where('mite_id', $mite_data['project_id'])->where('customer_id', $customer->id)->first();
+        $service = Service::where('mite_id', $mite_data['service_id'])->where('mite_access_id', $miteAccess->id)->first();
         return new Entry(
             [
                 'mite_id' => $mite_data['id'],
-                'project_id' => $mite_data['project_id'],
-                'service_id' => $mite_data['service_id'],
+                'project_id' => $project->id,
+                'service_id' => $service->id,
                 'date_at' => $mite_data['date_at'],
                 'minutes' => $mite_data['minutes'],
                 'note' => $mite_data['note'],
@@ -53,12 +56,12 @@ class Entry extends Model
         );
     }
 
-    public function toMite()
+    public function toMite(): array
     {
         return [
             'id' => $this->mite_id,
-            'project_id' => $this->project_id,
-            'service_id' => $this->service_id,
+            'project_id' => $this->project->mite_id,
+            'service_id' => $this->service->mite_id,
             'date_at' => $this->date_at,
             'minutes' => $this->minutes,
             'note' => $this->note,
@@ -69,5 +72,24 @@ class Entry extends Model
     public function toResource()
     {
         return new EntryResource($this);
+    }
+
+    public static function miteResourceName(bool $plural = false): string
+    {
+        if ($plural) {
+            return 'time_entries';
+        }
+        return 'time_entry';
+    }
+
+    public static function getMiteQuery(MiteAccess $miteAccess, $query)
+    {
+        // merge query with default query parameters
+        return array_merge(
+            [
+                'user_ud' => 'current',
+            ],
+            $query
+        );
     }
 }
