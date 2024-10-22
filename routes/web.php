@@ -47,6 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('/calendar')->group(function () {
         Route::controller(CalendarController::class)->group(function () {
             Route::get('/{id}', 'show')->name('calendar.show');
+            Route::get('/', 'index')->name('calendar.index');
         });
     });
 });
