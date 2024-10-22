@@ -33,5 +33,6 @@ return [
 
     'mite' => [
         'base_url' => env('MITE_BASE_URL'),
+        'default_access_token' => env('MITE_DEFAULT_ACCESS_TOKEN')
     ],
 ];

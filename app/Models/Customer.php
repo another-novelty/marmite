@@ -18,11 +18,12 @@ class Customer extends Model
         'note',
         'archived',
         'mite_access_id',
+        'last_sync_at',
     ];
 
     protected $casts = [
         'archived' => 'boolean',
-        'last_synced_at' => 'datetime',
+        'last_sync_at' => 'datetime',
     ];
 
     protected $dates = [

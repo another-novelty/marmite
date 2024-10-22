@@ -20,12 +20,13 @@ class Entry extends Model
         'minutes',
         'note',
         'locked',
+        'last_sync_at',
     ];
 
     protected $casts = [
         'locked' => 'boolean',
         'date_at' => 'date',
-        'last_synced_at' => 'datetime',
+        'last_sync_at' => 'datetime',
     ];
 
     public function project()

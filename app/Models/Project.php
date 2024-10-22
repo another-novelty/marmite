@@ -18,11 +18,12 @@ class Project extends Model
         'name',
         'note',
         'archived',
+        'last_sync_at',
     ];
 
     protected $casts = [
         'archived' => 'boolean',
-        'last_synced_at' => 'datetime',
+        'last_sync_at' => 'datetime',
     ];
 
     protected $dates = [

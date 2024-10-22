@@ -37,6 +37,18 @@ export default function Dashboard({ auth , hasMiteAccess, miteApiKeys}: PageProp
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">Hi {auth.user.name}!</div>
+                        { miteApiKeys.length == 0 && (
+                            <div>
+                                <div className="p-6 text-gray-900 dark:text-gray-100">You don't seem to have access to Mite yet.</div>
+                                <Link
+                                    href={route('profile.edit')}
+                                    as='button'
+                                    className="block w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                >
+                                    To Settings
+                                </Link>
+                            </div>
+                        )}
                         { miteApiKeys.length == 1 && (
                             <Link
                                 href={route('calendar.show', miteApiKeys.at(0))}

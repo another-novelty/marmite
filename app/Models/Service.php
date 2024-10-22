@@ -18,11 +18,12 @@ class Service extends Model
         'note',
         'archived',
         'access_token_id',
+        'last_sync_at'
     ];
 
     protected $casts = [
         'archived' => 'boolean',
-        'last_synced_at' => 'datetime',
+        'last_sync_at' => 'datetime',
     ];
 
     
