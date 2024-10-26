@@ -26,36 +26,142 @@
 .days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-gap: 1em;
+  //grid-gap: 1em;
 
   grid-template-areas:
     "monday tuesday wednesday thursday friday saturday sunday";
 
   .monday {
-    grid-area: monday;
+    grid-column: monday;
   }
 
   .tuesday {
-    grid-area: tuesday;
+    grid-column: tuesday;
   }
 
   .wednesday {
-    grid-area: wednesday;
+    grid-column: wednesday;
   }
 
   .thursday {
-    grid-area: thursday;
+    grid-column: thursday;
   }
 
   .friday {
-    grid-area: friday;
+    grid-column: friday;
   }
 
   .saturday {
-    grid-area: saturday;
+    grid-column: saturday;
   }
 
   .sunday {
-    grid-area: sunday;
+    grid-column: sunday;
+  }
+}
+
+.from_monday {
+  grid-column-start: monday;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.from_tuesday {
+  grid-column-start: tuesday;
+}
+
+.from_wednesday {
+  grid-column-start: wednesday;
+}
+
+.from_thursday {
+  grid-column-start: thursday;
+}
+
+.from_friday {
+  grid-column-start: friday;
+}
+
+.from_saturday {
+  grid-column-start: saturday;
+}
+
+.to_monday {}
+
+.to_tuesday {
+  grid-column-end: monday;
+}
+
+.to_wednesday {
+  grid-column-end: tuesday;
+}
+
+.to_thursday {
+  grid-column-end: wednesday;
+}
+
+.to_friday {
+  grid-column-end: thursday;
+}
+
+.to_saturday {
+  grid-column-end: friday;
+}
+
+.to_sunday {
+  grid-column-end: saturday
+}
+
+.date {
+  display: flex;
+  cursor: pointer;
+
+  transition: border 0.3s, background 0.3s;
+  user-select: none;
+  padding: 0.5em;
+
+  &.underutilized {
+    background: rgba(255, 0, 0, 0.1);
+
+    &.future {
+      background: rgba(255, 0, 0, 0.05);
+    }
+  }
+
+  &.withinRange {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  &.rangeStart {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 10%, rgba(255, 255, 255, 0.1) 100%);
+  }
+
+  &.rangeEnd {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 90%, rgba(255, 255, 255, 0));
+
+    &.rangeStart {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 10%, rgba(255, 255, 255, 0.1) 90%, rgba(255, 255, 255, 0) 100%);
+    }
+  }
+
+}
+
+.entry {
+  background: #ffffff10;
+
+  .detail {
+    overflow: hidden;
+    transition: height 0.3s;
+  }
+
+  &.expanded {
+    .detail {
+      height: 5em;
+    }
+  }
+
+  &.collapsed {
+    .detail {
+      height: 0;
+    }
   }
 }

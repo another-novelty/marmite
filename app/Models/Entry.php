@@ -21,6 +21,7 @@ class Entry extends Model
         'note',
         'locked',
         'last_sync_at',
+        'mite_access_id',
     ];
 
     protected $casts = [
@@ -39,6 +40,11 @@ class Entry extends Model
         return $this->belongsTo(Service::class);
     }
 
+    public function miteAccess()
+    {
+        return $this->belongsTo(MiteAccess::class);
+    }
+
     public static function fromMite($mite_data, MiteAccess $miteAccess): Entry
     {
         $customer = Customer::where('mite_id', $mite_data['customer_id'])->where('mite_access_id', $miteAccess->id)->first();
@@ -53,6 +59,7 @@ class Entry extends Model
                 'minutes' => $mite_data['minutes'],
                 'note' => $mite_data['note'],
                 'locked' => $mite_data['locked'],
+                'mite_access_id' => $miteAccess->id,
             ]
         );
     }

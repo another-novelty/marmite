@@ -1,0 +1,40 @@
+.form {
+  &.expanded{
+
+  }
+}
+
+.cell {
+  &.expanded {
+
+  }
+
+  &.editing {
+
+  }
+
+  .expand {
+
+  }
+
+  .date {}
+
+  .desc {}
+
+  .duration {}
+
+  .details {
+    overflow: hidden;
+  }
+
+  .service {}
+
+  .project {}
+
+  .note {}
+
+  .actions {
+  }
+
+
+}

@@ -1,0 +1,18 @@
+.syncbutton {
+    display: inline-block;
+    padding: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+
+    &:hover {
+        background-color: #f0f0f0;
+        color: #333;
+    }
+
+    &.syncing {
+        cursor: not-allowed;
+        color: #333;
+        background-color: #f0f0f0;
+    }
+}

@@ -42,6 +42,10 @@ class MiteAccess extends Model
         return $this->hasManyThrough(Project::class, Customer::class);
     }
 
+    public function entries() {
+        return $this->hasMany(Entry::class);
+    }
+
     public function mite() : MiteApiClient {
         // build a mite client
         return new MiteApiClient($this->access_token);

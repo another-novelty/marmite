@@ -22,6 +22,7 @@ return new class extends Migration
             $table->date('date_at')->required();
             $table->integer('minutes')->required();
             $table->boolean('locked')->default(false);
+            $table->foreignUuid('mite_access_id')->constrained()->onDelete('cascade');
         });
     }
 

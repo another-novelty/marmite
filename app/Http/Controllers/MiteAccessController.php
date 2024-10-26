@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreMiteAccessRequest;
 use App\Http\Requests\UpdateMiteAccessRequest;
+use App\Jobs\SyncMiteJob;
 use App\Models\MiteAccess;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
 
 class MiteAccessController extends Controller
 {
@@ -75,5 +78,16 @@ class MiteAccessController extends Controller
         $miteAccess->delete();
 
         return Redirect::route('profile.edit');
+    }
+
+    /**
+     * Sync the specified resource with mite.
+     */
+    public function sync(MiteAccess $miteAccess){
+        // TODO: Async with response per websocket
+        SyncMiteJob::dispatchSync($miteAccess, true);
+
+        return Redirect::back()
+            ->with('success', 'Syncing with mite...');
     }
 }

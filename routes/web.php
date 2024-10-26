@@ -49,6 +49,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/{id}', 'show')->name('calendar.show');
             Route::get('/', 'index')->name('calendar.index');
         });
+
+        Route::post('mite-accesses/{mite_access}/sync', [MiteAccessController::class, 'sync'])->name('mite.sync');
     });
 });
 
