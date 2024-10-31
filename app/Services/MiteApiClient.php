@@ -36,4 +36,32 @@ class MiteApiClient extends ApiClientService {
 
         return parent::post($endpoint, $data, $headers);
     }
+
+    public function patch($endpoint, $data = [], $headers = []) {
+        $headers = array_merge($this->defaultHeaders, $headers);
+        $headers = array_merge($headers, [
+            'X-MiteApiKey: ' . $this->apiKey,
+        ]);
+
+        return parent::patch($endpoint, $data, $headers);
+    }
+
+    public function delete($endpoint, $headers = []) {
+        $headers = array_merge($this->defaultHeaders, $headers);
+        $headers = array_merge($headers, [
+            'X-MiteApiKey: ' . $this->apiKey,
+        ]);
+
+        return parent::delete($endpoint, $headers);
+    }
+
+    public function put($endpoint, $data = [], $headers = []) {
+        $headers = array_merge($this->defaultHeaders, $headers);
+        $headers = array_merge($headers, [
+            'X-MiteApiKey: ' . $this->apiKey,
+        ]);
+
+        return parent::put($endpoint, $data, $headers);
+    }
+    
 }

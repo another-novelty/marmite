@@ -29,8 +29,7 @@ class SyncMiteJob implements ShouldQueue
         $this->clear = $clear;
     }
 
-
-    protected function syncCustomers(MiteAccess $mite_access, bool $clear = false) {
+    protected function syncCustomers(MiteAccess $mite_access, bool $clear = false, bool $syncBack = false) {
         if ($clear) {
             // clear all data for this MiteAccess instance
             $mite_access->customers()->delete();
@@ -49,9 +48,17 @@ class SyncMiteJob implements ShouldQueue
             }
             // TODO: check if each database customer exists in Mite and delete it if not
         }
+
+        if ($syncBack) {
+            // refresh the list of customers for this MiteAccess instance
+            $customers = Customer::all();
+            foreach ($customers as $customer) {
+                $customer->syncBack();
+            }
+        }
     }
 
-    protected function syncMiteProjects(MiteAccess $mite_access, bool $clear = false) {
+    protected function syncMiteProjects(MiteAccess $mite_access, bool $clear = false, bool $syncBack = false) {
         if ($clear) {
             // clear all data for this MiteAccess instance
             $mite_access->projects()->delete();
@@ -69,9 +76,17 @@ class SyncMiteJob implements ShouldQueue
                 $db_project->update($project->toArray());
             }
         }
+
+        if ($syncBack) {
+            // refresh the list of projects for this MiteAccess instance
+            $projects = Project::all();
+            foreach ($projects as $project) {
+                $project->syncBack();
+            }
+        }
     }
 
-    protected function syncMiteServices(MiteAccess $mite_access, bool $clear = false) {
+    protected function syncMiteServices(MiteAccess $mite_access, bool $clear = false, bool $syncBack = false) {
         if ($clear) {
             // clear all data for this MiteAccess instance
             $mite_access->services()->delete();
@@ -89,9 +104,17 @@ class SyncMiteJob implements ShouldQueue
                 $db_service->update($service->toArray());
             }
         }
+
+        if ($syncBack) {
+            // refresh the list of services for this MiteAccess instance
+            $services = Service::all();
+            foreach ($services as $service) {
+                $service->syncBack();
+            }
+        }
     }
 
-    protected function syncEntries(MiteAccess $mite_access, bool $clear = false) {
+    protected function syncEntries(MiteAccess $mite_access, bool $clear = false, bool $syncBack = false) {
         if ($clear) {
             // clear all data for this MiteAccess instance
             $mite_access->entries()->delete();
@@ -112,6 +135,14 @@ class SyncMiteJob implements ShouldQueue
                 $db_time_entry->update($time_entry->toArray());
             }
         }
+
+        if ($syncBack) {
+            // refresh the list of time entries for this MiteAccess instance
+            $time_entries = Entry::all();
+            foreach ($time_entries as $time_entry) {
+                $time_entry->syncBack();
+            }
+        }
     }
 
     /**
@@ -121,12 +152,13 @@ class SyncMiteJob implements ShouldQueue
     {
         $mite_access = $this->mite_access;
         $clear = $this->clear;
-        $this->syncCustomers($mite_access, $clear);
+        // TODO get user roles and check if they can sync back
+        $this->syncCustomers($mite_access, $clear, false);
 
-        $this->syncMiteProjects($mite_access, $clear);
+        $this->syncMiteProjects($mite_access, $clear, false);
 
-        $this->syncMiteServices($mite_access, $clear);
+        $this->syncMiteServices($mite_access, $clear, false);
 
-        $this->syncEntries($mite_access, $clear);
+        $this->syncEntries($mite_access, $clear, true);
     }
 }

@@ -3,10 +3,12 @@
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\MiteAccessController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TimeEntryController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Ramsey\Uuid\Type\Time;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +54,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::post('mite-accesses/{mite_access}/sync', [MiteAccessController::class, 'sync'])->name('mite.sync');
     });
+
+    Route::resource('entries', TimeEntryController::class)->only(['store', 'update', 'destroy']);
 });
 
 require __DIR__.'/auth.php';

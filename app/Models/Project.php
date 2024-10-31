@@ -40,7 +40,7 @@ class Project extends Model
         return $this->hasMany(Entry::class);
     }
 
-    public static function fromMite($mite_data, MiteAccess $miteAccess): Project
+    public static function newFromMite($mite_data, MiteAccess $miteAccess): Project
     {
         return new Project(
             [

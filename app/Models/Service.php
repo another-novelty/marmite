@@ -41,7 +41,7 @@ class Service extends Model
         return $this->belongsTo(MiteAccess::class);
     }
 
-    public static function fromMite($mite_data, MiteAccess $miteAccess): Service
+    public static function newFromMite($mite_data, MiteAccess $miteAccess): Service
     {
         return new Service(
             [

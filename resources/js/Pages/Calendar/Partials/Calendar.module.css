@@ -23,13 +23,19 @@
   }
 }
 
-.days {
+.month {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   //grid-gap: 1em;
 
   grid-template-areas:
-    "monday tuesday wednesday thursday friday saturday sunday";
+    "monday tuesday wednesday thursday friday";
+
+  &.showWeekend {
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-areas:
+      "monday tuesday wednesday thursday friday saturday sunday";
+  }
 
   .monday {
     grid-column: monday;
@@ -57,6 +63,14 @@
 
   .sunday {
     grid-column: sunday;
+  }
+
+  .sunday, .saturday {
+    display: none;
+
+    .showWeekend & {
+      display: block;
+    }
   }
 }
 
@@ -119,12 +133,34 @@
   user-select: none;
   padding: 0.5em;
 
+  border: 3px solid transparent;
+
   &.underutilized {
     background: rgba(255, 0, 0, 0.1);
 
     &.future {
       background: rgba(255, 0, 0, 0.05);
     }
+  }
+
+  &.today {
+    .dayNumber {
+      font-weight: bold;
+    }
+
+    border: 3px solid rgba(0, 0, 0, 0.5);
+
+    @media (prefers-color-scheme: dark) {
+      border: 3px solid rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .dayNumber {
+    font-size: 1.5em;
+    margin-right: 0.5em;
+    border-right: 1px solid #ccc;
+    padding-right: 0.5em;
+    min-width: 2em;
   }
 
   &.withinRange {
@@ -143,6 +179,10 @@
     }
   }
 
+  .duration {
+    font-size: 0.8em;
+    color: #666;
+  }
 }
 
 .entry {

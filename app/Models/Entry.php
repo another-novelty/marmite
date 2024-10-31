@@ -45,7 +45,7 @@ class Entry extends Model
         return $this->belongsTo(MiteAccess::class);
     }
 
-    public static function fromMite($mite_data, MiteAccess $miteAccess): Entry
+    public static function newFromMite($mite_data, MiteAccess $miteAccess): Entry
     {
         $customer = Customer::where('mite_id', $mite_data['customer_id'])->where('mite_access_id', $miteAccess->id)->first();
         $project = Project::where('mite_id', $mite_data['project_id'])->where('customer_id', $customer->id)->first();

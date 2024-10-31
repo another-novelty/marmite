@@ -69,4 +69,83 @@ class ApiClientService
 
         return json_decode($response, true);
     }
+
+    /**
+     * Send a PUT request to the API
+     * 
+     * @param string $endpoint The endpoint to call
+     * @param array $data The data to send
+     * @param array $headers The headers to send
+     * @return mixed The response from the API interpreted as JSON
+     */
+    public function put($endpoint, $data = [], $headers = [
+        'Accept: application/json',
+        'Content-Type: application/json',
+    ])
+    {
+        $url = $this->baseUrl . $endpoint;
+        $ch = curl_init($url);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * Send a PATCH request to the API
+     * 
+     * @param string $endpoint The endpoint to call
+     * @param array $data The data to send
+     * @param array $headers The headers to send
+     * @return mixed The response from the API interpreted as JSON
+     */
+    public function patch($endpoint, $data = [], $headers = [
+        'Accept: application/json',
+        'Content-Type: application/json',
+    ])
+    {
+        $url = $this->baseUrl . $endpoint;
+        $ch = curl_init($url);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * Send a DELETE request to the API
+     * 
+     * @param string $endpoint The endpoint to call
+     * @param array $headers The headers to send
+     * @return mixed The response from the API interpreted as JSON
+     */
+    public function delete($endpoint, $headers = [
+        'Accept: application/json',
+        'Content-Type: application/json',
+    ])
+    {
+        $url = $this->baseUrl . $endpoint;
+        $ch = curl_init($url);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($response, true);
+    }
 }

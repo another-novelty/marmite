@@ -2,26 +2,7 @@ import {useState, useCallback, useMemo, useEffect} from "react";
 import classNames from "classnames";
 
 import css from "./Calendar.module.css";
-import { on } from "events";
-
-
-type TimeEntry = {
-  id: string,
-  date_at: string,
-  minutes: number,
-  note: string,
-  project: {
-    id: string,
-    name: string,
-    note: string,
-    customer_id: string,
-  },
-  service: {
-    id: string,
-    name: string,
-    note: string,
-  },
-}
+import { TimeEntry } from "@/types/calendar";
 
 function EntryView({entry, className = ""}: {entry: TimeEntry, className?: string}) {
   const [expanded, setExpanded] = useState(false);
@@ -54,6 +35,7 @@ function DurationView({minutes, className = "", underutilized}: {minutes: number
   const hours = useMemo(() => Math.floor(minutes / 60), [minutes]);
 
   const classes = classNames({
+    [css.duration]: true,
     [className]: className,
   });
 
@@ -126,11 +108,10 @@ function DateCell({date, className = "", timeEntries, onClickStart, onClickEnd, 
   return (<div className={classes} onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseEnter={onMouseEnter}>
     <div className={css.dayNumber}>{date.toLocaleDateString('default', {day: 'numeric'})}</div>
     <DurationView minutes={minutes} underutilized={underutilized}/>
-    { timeEntries && timeEntries.map((entry) => <EntryView key={entry.id} entry={entry}/>)}
   </div>);
 }
 
-function MonthView({className = "", selectedMonth, timeEntries = [], onSelect}: {className?:string, selectedMonth: Date, timeEntries?: TimeEntry[], onSelect?: (rangeStart: Date, rangeEnd: Date) => any}) {
+function MonthView({className = "", selectedMonth, timeEntries = [], onSelect, showWeekend}: {className?:string, selectedMonth: Date, timeEntries?: TimeEntry[], onSelect?: (rangeStart: Date, rangeEnd: Date) => any, showWeekend?: boolean}) {
   const [hoveredDate, setHoveredDate] = useState<Date|null>(null);
   const [rangeStart, setRangeStart] = useState<Date|null>(null)
   const [rangeEnd, setRangeEnd] = useState<Date|null>(null)
@@ -204,8 +185,14 @@ function MonthView({className = "", selectedMonth, timeEntries = [], onSelect}: 
     }
   }, [setHoveredDate, clickStarted]);
 
+  const classes = classNames({
+    [css.month]: true,
+    [css.showWeekend]: showWeekend,
+    [className]: className,
+  });
+
   return (
-    <div className={css.days + " " + className}>
+    <div className={classes}>
       <div className={css.monday}>Monday</div>
       <div className={css.tuesday}>Tuesday</div>
       <div className={css.wednesday}>Wednesday</div>
