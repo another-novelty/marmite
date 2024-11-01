@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .form {
   display: flex;
   flex-direction: column;
@@ -153,6 +157,12 @@
 }
 
 .cell {
+  @apply
+    bg-gray-400
+    dark:bg-gray-600 
+    dark:text-white
+    rounded-lg p-4;
+
   &.expanded {
 
   }

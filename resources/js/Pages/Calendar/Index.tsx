@@ -84,7 +84,7 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
                 onSelect={onSelect}
               />
             </div>
-            <div className="my-5 p-5">
+            <div className="my-5 p-5 grid grid-cols-3 gap-5">
               { shownEntries.length > 0 && shownEntries.map((entry) => (
                 <TimeEntryCell
                   key={entry.id}
