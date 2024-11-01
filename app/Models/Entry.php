@@ -47,14 +47,26 @@ class Entry extends Model
 
     public static function newFromMite($mite_data, MiteAccess $miteAccess): Entry
     {
-        $customer = Customer::where('mite_id', $mite_data['customer_id'])->where('mite_access_id', $miteAccess->id)->first();
-        $project = Project::where('mite_id', $mite_data['project_id'])->where('customer_id', $customer->id)->first();
-        $service = Service::where('mite_id', $mite_data['service_id'])->where('mite_access_id', $miteAccess->id)->first();
+        $project_id = null;
+        if (isset($mite_data['customer_id']) && isset($mite_data['project_id'])) {
+            $customer = Customer::where('mite_id', $mite_data['customer_id'])->where('mite_access_id', $miteAccess->id)->first();
+            if ($customer ) {
+                $project = Project::where('mite_id', $mite_data['project_id'])->where('customer_id', $customer->id)->first();
+                $project_id = $project->id;
+            }
+        }
+
+        $service_id = null;
+        if (isset($mite_data['service_id'])) {
+            $service = Service::where('mite_id', $mite_data['service_id'])->where('mite_access_id', $miteAccess->id)->first();
+            $service_id = $service->id;
+        }
+        
         return new Entry(
             [
                 'mite_id' => $mite_data['id'],
-                'project_id' => $project->id,
-                'service_id' => $service->id,
+                'project_id' => $project_id,
+                'service_id' => $service_id,
                 'date_at' => $mite_data['date_at'],
                 'minutes' => $mite_data['minutes'],
                 'note' => $mite_data['note'],
@@ -66,10 +78,20 @@ class Entry extends Model
 
     public function toMite(): array
     {
+        $project_id = null;
+        if ($this->project) {
+            $project_id = $this->project->mite_id;
+        }
+
+        $service_id = null;
+        if ($this->service) {
+            $service_id = $this->service->mite_id;
+        }
+
         return [
             'id' => $this->mite_id,
-            'project_id' => $this->project->mite_id,
-            'service_id' => $this->service->mite_id,
+            'project_id' => $project_id,
+            'service_id' => $service_id,
             'date_at' => $this->date_at,
             'minutes' => $this->minutes,
             'note' => $this->note,

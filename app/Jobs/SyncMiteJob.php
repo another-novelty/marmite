@@ -122,13 +122,23 @@ class SyncMiteJob implements ShouldQueue
         // refresh the list of time entries for this MiteAccess instance
         $time_entries = Entry::miteGetAll($mite_access);
         foreach ($time_entries as $time_entry) {
-            $project = Project::where('mite_id', $time_entry->project->mite_id)->first();
-            $service = Service::where('mite_id', $time_entry->service->mite_id)->first();
+            $project_id = null;
+            if ($time_entry->project !== null) {
+                $project = Project::where('mite_id', $time_entry->project->mite_id)->first();
+                $project_id = $project->id;
+            }
+
+            $service_id = null;
+            if ($time_entry->service !== null) {
+                $service = Service::where('mite_id', $time_entry->service->mite_id)->first();
+                $service_id = $service->id;
+            }
+
             $db_time_entry = Entry::where('mite_id', $time_entry->mite_id)->first();
             if ($db_time_entry === null) {
                 // if not, create it
-                $time_entry->project_id = $project->id;
-                $time_entry->service_id = $service->id;
+                $time_entry->project_id = $project_id;
+                $time_entry->service_id = $service_id;
                 $time_entry->save();
             } else {
                 // if it does, update it
