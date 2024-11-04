@@ -16,18 +16,21 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
     time_entries?: TimeEntry[],
   }>) {
 
-  const [range, setRange] = useState<{ start: Date, end: Date }>({ start: new Date(), end: new Date() });
+  const [range, setRange] = useState<{ start: Date | null, end: Date | null}>({ start: null, end: null});
 
-  const onSelect = useCallback((start: Date, end: Date) => {
+  const onSelect = useCallback((start: Date|null, end: Date|null) => {
     setRange({ start, end });
   }, [setRange]);
 
   const [mode, setMode] = useState<"create" | "edit" | "calendar">("calendar");
 
   const shownEntries = useMemo(() => {
+    if (range.start === null || range.end === null) {
+      return [];
+    }
     return time_entries.filter((entry) => {
       const date_at = new Date(entry.date_at);
-      return date_at >= range.start && date_at <= range.end;
+      return date_at >= range.start! && date_at <= range.end!;
     });
   }, [time_entries, range]);
 
@@ -111,8 +114,8 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
                 <EditTimeEntryForm
                   customers={customers}
                   services={services}
-                  date_start={range.start}
-                  date_end={range.end}
+                  date_start={range.start ?? new Date()}
+                  date_end={range.end ?? new Date()}
                   date_editable={false}
                   onSubmitted={() => {setMode("calendar")}}
                   onCanceled={() => {setMode("calendar")}}

@@ -128,7 +128,6 @@
 .date {
   cursor: pointer;
   position: relative;
-  transition: border 0.3s, background 0.3s;
   user-select: none;
 
   .dateInner {
@@ -150,6 +149,26 @@
 
       @media (prefers-color-scheme: dark) {
         border: 3px solid rgba(255, 255, 255, 0.5);
+      }
+    }
+  }
+
+  &:hover {
+    .dateInner {
+      border: 3px solid rgba(0, 0, 0, 0.2);
+
+      @media (prefers-color-scheme: dark) {
+        border: 3px solid rgba(255, 255, 255, 0.2);
+      }
+    }
+
+    &.today {
+      .dateInner {
+        border: 3px solid rgba(0, 0, 0, 0.8);
+
+        @media (prefers-color-scheme: dark) {
+          border: 3px solid rgba(255, 255, 255, 0.8);
+        }
       }
     }
   }

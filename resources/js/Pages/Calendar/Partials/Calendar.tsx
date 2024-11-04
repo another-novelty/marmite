@@ -1,8 +1,9 @@
-import {useState, useCallback, useMemo, useEffect} from "react";
+import {useState, useCallback, useMemo, useEffect, useReducer} from "react";
 import classNames from "classnames";
 
 import css from "./Calendar.module.css";
 import { TimeEntry } from "@/types/calendar";
+import { on } from "events";
 
 const UNDERUTILIZED_THRESHOLD = 480;
 
@@ -53,9 +54,9 @@ function DateCell({date, className = "", timeEntries, onClickStart, onClickEnd, 
     date: Date, 
     className?: string, 
     timeEntries?: TimeEntry[], 
-    onClickStart?: (date: Date) => any, 
-    onClickEnd?: (date: Date) => any, 
-    onHover?: (date: Date) => any,
+    onClickStart?: (date: Date, e: React.MouseEvent<HTMLDivElement>) => any, 
+    onClickEnd?: (date: Date, e: React.MouseEvent<HTMLDivElement>) => any, 
+    onHover?: (date: Date, e: React.MouseEvent<HTMLDivElement>) => any,
     withinRange?: boolean,
     isRangeStart?: boolean,
     isRangeEnd?: boolean,
@@ -93,21 +94,21 @@ function DateCell({date, className = "", timeEntries, onClickStart, onClickEnd, 
     [css.rangeEnd]: isRangeEnd,
   });
 
-  const onMouseDown = useCallback(()=>{
+  const onMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>)=>{
     if (onClickStart){
-      return onClickStart(date);
+      return onClickStart(date, e);
     }
   }, [date, onClickStart])
 
-  const onMouseUp = useCallback(()=>{
+  const onMouseUp = useCallback((e: React.MouseEvent<HTMLDivElement>)=>{
     if (onClickEnd){
-      return onClickEnd(date);
+      return onClickEnd(date, e);
     }
   }, [date, onClickEnd])
 
-  const onMouseEnter = useCallback(()=>{
+  const onMouseEnter = useCallback((e: React.MouseEvent<HTMLDivElement>)=>{
     if (onHover){
-      return onHover(date);
+      return onHover(date, e);
     }
   }, [date, onHover])
 
@@ -122,12 +123,90 @@ function DateCell({date, className = "", timeEntries, onClickStart, onClickEnd, 
   </div>);
 }
 
-function MonthView({className = "", selectedMonth, timeEntries = [], onSelect, showWeekend}: {className?:string, selectedMonth: Date, timeEntries?: TimeEntry[], onSelect?: (rangeStart: Date, rangeEnd: Date) => any, showWeekend?: boolean}) {
-  const [hoveredDate, setHoveredDate] = useState<Date|null>(null);
-  const [rangeStart, setRangeStart] = useState<Date|null>(null)
-  const [rangeEnd, setRangeEnd] = useState<Date|null>(null)
-  const [clickStarted, setClickStarted] = useState(false)
+function MonthView({className = "", selectedMonth, timeEntries = [], onSelect, showWeekend}: {className?:string, selectedMonth: Date, timeEntries?: TimeEntry[], onSelect?: (rangeStart: Date|null, rangeEnd: Date|null) => any, showWeekend?: boolean}) {
+  function reducer(
+    state: {
+      rangeStart: Date | null, 
+      rangeEnd: Date | null, 
+      clickStarted: boolean,
+    }, action: {
+      type: "finish" | "hover" | "start" | "reset", 
+      date: Date | null,
+      shiftDown?: boolean,
+    }) {
 
+    const minDate = ((date: Date | null, ...restDates: (Date | null)[]) => {
+      let m = date;
+      for (const d of restDates){
+        if (m === null){
+          m = d;
+        } else {
+          if (d && d < m){
+            m = d;
+          }
+        }
+      }
+      return m;
+    }) (state.rangeStart, state.rangeEnd, action.date);
+
+    let maxDate = ((date: Date | null, ...restDates: (Date | null)[]) => {
+      let m = date;
+      for (const d of restDates){
+        if (m === null){
+          m = d;
+        } else {
+          if (d && d > m){
+            m = d;
+          }
+        }
+      }
+      return m;
+    }) (state.rangeStart, state.rangeEnd, action.date);
+
+    if (action.type === "start" && action.shiftDown){
+      action.type = "finish";
+    }
+
+    switch (action.type) {
+      case "finish":
+        return {
+          ...state,
+          rangeStart: minDate,
+          rangeEnd: maxDate,
+          clickStarted: false,
+        };
+      case "hover":
+        if (!state.clickStarted){
+          return state;
+        }
+        return {
+          ...state,
+          rangeStart: minDate,
+          rangeEnd: maxDate,
+        };
+      case "start":
+        return {
+          ...state,
+          clickStarted: true,
+          rangeStart: action.date,
+          rangeEnd: null,
+        };
+      case "reset":
+        return {
+          rangeStart: null,
+          rangeEnd: null,
+          clickStarted: false,
+        };
+      default:
+        return state;
+    }
+  }
+
+  const [state, dispatch] = useReducer(reducer, {
+    rangeStart: null,
+    rangeEnd: null,
+    clickStarted: false,
+  });
   const dates = useMemo(() => {
     let dates = Array.from(
       {
@@ -142,16 +221,16 @@ function MonthView({className = "", selectedMonth, timeEntries = [], onSelect, s
     
     return dates.map((date: Date) => {
       const timeEntriesFiltered = timeEntries.filter((entry: TimeEntry) => new Date(entry.date_at).toLocaleDateString("de", {timeZone: "UTC"}) === date.toLocaleDateString("de", {timeZone: "UTC"}));
-
+      const end = state.hoveredDate ?? state.rangeEnd;
       // if date is within range
-      if (rangeStart && hoveredDate){
-        if (rangeStart <= hoveredDate && rangeStart <= date && date <= hoveredDate){
+      if (state.rangeStart && end){
+        if (state.rangeStart <= end && state.rangeStart <= date && date <= end){
           return {
             date: date,
             timeEntries: timeEntriesFiltered,
             withinRange: true
           }
-        } else if (rangeStart >= hoveredDate && rangeStart >= date && date >= hoveredDate){
+        } else if (state.rangeStart >= end && state.rangeStart >= date && date >= end){
           return {
             date: date,
             timeEntries: timeEntriesFiltered,
@@ -165,37 +244,36 @@ function MonthView({className = "", selectedMonth, timeEntries = [], onSelect, s
         withinRange: false
       }
     });
-  }, [selectedMonth, timeEntries, rangeStart, hoveredDate]);
+  }, [selectedMonth, timeEntries, state]);
 
-  const onClickStart = useCallback((date: Date)=>{
-    console.log("start: " + date);
-    setRangeStart(date);
-    setHoveredDate(date);
-    setRangeEnd(null);
-    setClickStarted(true)
-  }, [setRangeStart])
+  const onClickStart = useCallback((date: Date, e: React.MouseEvent<HTMLDivElement>)=>{
+    if (e.shiftKey){
+      return;
+    }
+    dispatch({type: "start", date: date});
+  }, [])
 
-  const onClickEnd = useCallback((date: Date) => {
-    console.log("end: " + date);
-    setRangeEnd(date);
-    setClickStarted(false);
+  const onClickEnd = useCallback((date: Date, e: React.MouseEvent<HTMLDivElement>) => {
+    dispatch({type: "finish", date: date});
+  }, []);
 
-    if (onSelect){
-      if (rangeStart) {
-        if (date > rangeStart){
-          onSelect(rangeStart, date)
-        } else {
-          onSelect(date, rangeStart)
-        }
+  useEffect(()=> {
+    if (onSelect) {
+      if (state.rangeEnd === null || state.rangeStart === null){
+        onSelect(null, null)
+      } else {
+        onSelect(state.rangeStart, state.rangeEnd);
       }
     }
-  }, [setRangeEnd, rangeStart, onSelect])
+  }, [state, onSelect])
 
-  const onMouseEnter = useCallback((date: Date) => {
-    if (clickStarted){
-      setHoveredDate(date);
-    }
-  }, [setHoveredDate, clickStarted]);
+  useEffect(() => {
+    console.log(state);
+  }, [state]);
+
+  const onMouseEnter = useCallback((date: Date, e: React.MouseEvent<HTMLDivElement>) => {
+    dispatch({type: "hover", date: date});
+  }, []);
 
   const classes = classNames({
     [css.month]: true,
@@ -240,8 +318,8 @@ function MonthView({className = "", selectedMonth, timeEntries = [], onSelect, s
             onClickEnd={onClickEnd}
             onHover={onMouseEnter}
             withinRange={date.withinRange}
-            isRangeStart={rangeStart?.toDateString() === date.date.toDateString()}
-            isRangeEnd={hoveredDate?.toDateString() === date.date.toDateString()}
+            isRangeStart={state.rangeStart?.toDateString() === date.date.toDateString()}
+            isRangeEnd={(state.hoveredDate ?? state.rangeEnd)?.toDateString() === date.date.toDateString()}
           />
       )}
     </div>
@@ -251,7 +329,7 @@ function MonthView({className = "", selectedMonth, timeEntries = [], onSelect, s
 export default function Calendar({className = "", onSelect, customers = [], services = [], entries = []} : 
   {
     className?: string, 
-    onSelect?: (start: Date, end: Date) => any, 
+    onSelect?: (start: Date|null, end: Date|null) => any, 
     customers?: {
       name: string, 
       id: string,
