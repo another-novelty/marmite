@@ -126,32 +126,31 @@
 }
 
 .date {
-  display: flex;
   cursor: pointer;
-
+  position: relative;
   transition: border 0.3s, background 0.3s;
   user-select: none;
-  padding: 0.5em;
 
-  border: 3px solid transparent;
-
-  &.underutilized {
-    background: rgba(255, 0, 0, 0.1);
-
-    &.future {
-      background: rgba(255, 0, 0, 0.05);
-    }
+  .dateInner {
+    display: flex;
+    transition: border 0.3s;
+    border: 3px solid transparent;
+    padding: 0.5em;
+    position: relative;
   }
-
+  
+  
   &.today {
     .dayNumber {
       font-weight: bold;
     }
 
-    border: 3px solid rgba(0, 0, 0, 0.5);
+    > .dateInner {
+      border: 3px solid rgba(0, 0, 0, 0.5);
 
-    @media (prefers-color-scheme: dark) {
-      border: 3px solid rgba(255, 255, 255, 0.5);
+      @media (prefers-color-scheme: dark) {
+        border: 3px solid rgba(255, 255, 255, 0.5);
+      }
     }
   }
 
@@ -163,27 +162,64 @@
     min-width: 2em;
   }
 
-  &.withinRange {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  &.rangeStart {
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 10%, rgba(255, 255, 255, 0.1) 100%);
-  }
-
-  &.rangeEnd {
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 90%, rgba(255, 255, 255, 0));
-
-    &.rangeStart {
-      background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 10%, rgba(255, 255, 255, 0.1) 90%, rgba(255, 255, 255, 0) 100%);
-    }
-  }
-
   .duration {
     font-size: 0.8em;
-    color: #666;
+    container-type: size;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+  }
+
+  .rangeBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+
+    >div {
+      background: rgba(0, 178,200, 0.8);
+    }
+
+    .rangeStart, .rangeEnd {
+      aspect-ratio: 1;
+      flex-shrink: 0;
+    }
+
+    .rangeStart {
+      border-radius: 50% 0 0 0%;
+    }
+
+    .rangeEnd {
+      border-radius: 0 0 50% 0;
+    }
+
+    .rangeMiddle {
+      flex-grow: 1;
+      flex-shrink: 0;
+    }
   }
 }
+
+.underutilizedIcon {
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(0,0,0, 0.5);
+  padding: 2px;
+  border-radius: 50%;
+  display: inline-block;
+  font-size: 12cqi;
+  text-align: center;
+  margin: auto 4px;
+  justify-self: flex-end;
+  
+  @media (prefers-color-scheme: dark) {
+    border-color: rgba(255,255,255, 0.5);
+  }
+}
+
 
 .entry {
   background: #ffffff10;

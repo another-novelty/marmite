@@ -4,32 +4,7 @@ import classNames from "classnames";
 import css from "./Calendar.module.css";
 import { TimeEntry } from "@/types/calendar";
 
-function EntryView({entry, className = ""}: {entry: TimeEntry, className?: string}) {
-  const [expanded, setExpanded] = useState(false);
-  const toggleExpanded = useCallback(() => {
-    setExpanded(!expanded);
-  }, [expanded]);
-
-  const date_at = useMemo(() => new Date(entry.date_at).toLocaleDateString("de", {timeZone: "UTC"}), [entry.date_at]);
-
-  const hours = useMemo(() => Math.floor(entry.minutes / 60) + "h " + entry.minutes % 60 + "m", [entry.minutes]);
-
-  const classes = classNames({
-    [css.entry]: true,
-    [css.expanded]: expanded,
-    [css.collapsed]: !expanded,
-    [className]: className,
-  });
-
-  return (
-    <div className={classes} onClick={toggleExpanded}>
-      <div className={css.duration}>{hours}</div>
-      <div className={css.detail}>
-        <div className={css.note}>{entry.note}</div>
-      </div>
-    </div>
-  )
-}
+const UNDERUTILIZED_THRESHOLD = 480;
 
 function DurationView({minutes, className = "", underutilized}: {minutes: number, className?: string, underutilized?: boolean}) {
   const hours = useMemo(() => Math.floor(minutes / 60), [minutes]);
@@ -39,7 +14,38 @@ function DurationView({minutes, className = "", underutilized}: {minutes: number
     [className]: className,
   });
 
-  return (<div className={classes}>{Math.floor(minutes / 60)}h {minutes % 60}m</div>)
+  return (<div className={classes}>
+    {Math.floor(minutes / 60)}h {minutes % 60}m
+    { underutilized && (
+      <UnderutilizedIcon />
+    )}
+  </div>)
+}
+
+function UnderutilizedIcon({className = ""}: {className?: string}) {
+  const classes = classNames({
+    [css.underutilizedIcon]: true,
+    [className]: className,
+  });
+
+  return (<span className={classes} title={"You logged less than " + UNDERUTILIZED_THRESHOLD + " minutes"}>!</span>)
+}
+
+function RangeBackground({className = "", isStart, isEnd}: {className?: string, isStart?: boolean, isEnd?: boolean}) {
+  const classes = classNames({
+    [css.rangeBackground]: true,
+    [className]: className,
+  });
+
+  return (<div className={classes}>
+    {isStart && (
+      <div className={css.rangeStart}/>
+    )}
+    <div className={css.rangeMiddle}/>
+    {isEnd && (
+      <div className={css.rangeEnd}/>
+    )}
+  </div>)
 }
 
 function DateCell({date, className = "", timeEntries, onClickStart, onClickEnd, onHover, withinRange, isRangeStart, isRangeEnd} : 
@@ -63,7 +69,7 @@ function DateCell({date, className = "", timeEntries, onClickStart, onClickEnd, 
     if (date.getDay() === 0 || date.getDay() === 6){
       return false;
     }
-    return minutes < 480
+    return minutes < UNDERUTILIZED_THRESHOLD
   }, [minutes, date]);
 
   const overutilized = useMemo(() => {
@@ -106,8 +112,13 @@ function DateCell({date, className = "", timeEntries, onClickStart, onClickEnd, 
   }, [date, onHover])
 
   return (<div className={classes} onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseEnter={onMouseEnter}>
-    <div className={css.dayNumber}>{date.toLocaleDateString('default', {day: 'numeric'})}</div>
-    <DurationView minutes={minutes} underutilized={underutilized}/>
+    {withinRange && (
+      <RangeBackground isStart={isRangeStart} isEnd={isRangeEnd}/>
+    )}
+    <div className={css.dateInner}>
+      <div className={css.dayNumber}>{date.toLocaleDateString('default', {day: 'numeric'})}</div>
+      <DurationView minutes={minutes} underutilized={underutilized}/>
+    </div>
   </div>);
 }
 
@@ -157,6 +168,7 @@ function MonthView({className = "", selectedMonth, timeEntries = [], onSelect, s
   }, [selectedMonth, timeEntries, rangeStart, hoveredDate]);
 
   const onClickStart = useCallback((date: Date)=>{
+    console.log("start: " + date);
     setRangeStart(date);
     setHoveredDate(date);
     setRangeEnd(null);
@@ -164,6 +176,7 @@ function MonthView({className = "", selectedMonth, timeEntries = [], onSelect, s
   }, [setRangeStart])
 
   const onClickEnd = useCallback((date: Date) => {
+    console.log("end: " + date);
     setRangeEnd(date);
     setClickStarted(false);
 
@@ -180,7 +193,6 @@ function MonthView({className = "", selectedMonth, timeEntries = [], onSelect, s
 
   const onMouseEnter = useCallback((date: Date) => {
     if (clickStarted){
-      console.log("hover: " + date);
       setHoveredDate(date);
     }
   }, [setHoveredDate, clickStarted]);
