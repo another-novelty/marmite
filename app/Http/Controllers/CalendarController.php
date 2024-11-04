@@ -16,6 +16,7 @@ class CalendarController extends Controller
         $customers = $mite_access->customers()->with('projects')->get();
         $services = $mite_access->services()->get();
         $time_entries = $mite_access->entries()->with("service")->with("project")->get();
+        $templates = $mite_access->templates()->with("contents")->get();
 
         return Inertia::render('Calendar/Index',
             [
@@ -23,6 +24,7 @@ class CalendarController extends Controller
                 'customers' => $customers,
                 'services' => $services,
                 'time_entries' => $time_entries,
+                'templates' => $templates,
             ]
         );
     }

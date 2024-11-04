@@ -221,7 +221,7 @@ function MonthView({className = "", selectedMonth, timeEntries = [], onSelect, s
     
     return dates.map((date: Date) => {
       const timeEntriesFiltered = timeEntries.filter((entry: TimeEntry) => new Date(entry.date_at).toLocaleDateString("de", {timeZone: "UTC"}) === date.toLocaleDateString("de", {timeZone: "UTC"}));
-      const end = state.hoveredDate ?? state.rangeEnd;
+      const end = state.rangeEnd;
       // if date is within range
       if (state.rangeStart && end){
         if (state.rangeStart <= end && state.rangeStart <= date && date <= end){
@@ -319,7 +319,7 @@ function MonthView({className = "", selectedMonth, timeEntries = [], onSelect, s
             onHover={onMouseEnter}
             withinRange={date.withinRange}
             isRangeStart={state.rangeStart?.toDateString() === date.date.toDateString()}
-            isRangeEnd={(state.hoveredDate ?? state.rangeEnd)?.toDateString() === date.date.toDateString()}
+            isRangeEnd={(state.rangeEnd)?.toDateString() === date.date.toDateString()}
           />
       )}
     </div>

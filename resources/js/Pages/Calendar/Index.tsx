@@ -5,7 +5,7 @@ import { useCallback, useMemo, useState } from 'react';
 import Calendar from './Partials/Calendar';
 import SyncButton from './Partials/SyncButton';
 import {EditTimeEntryForm, TimeEntryCell} from './Partials/TimeEntryForm';
-import { Customer, Service, TimeEntry } from '@/types/calendar';
+import { Customer, Service, TimeEntry, TimeEntryTemplate } from '@/types/calendar';
 import Modal from '@/Components/Modal';
 
 export default function CalendarComponent({ auth, miteAPIKey, customers = [], services = [], time_entries = [] }:
@@ -14,6 +14,7 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
     customers?: Customer[],
     services?: Service[],
     time_entries?: TimeEntry[],
+    time_entry_templates?: TimeEntryTemplate[],
   }>) {
 
   const [range, setRange] = useState<{ start: Date | null, end: Date | null}>({ start: null, end: null});

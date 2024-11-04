@@ -25,3 +25,12 @@ export type TimeEntry = {
     project: Project,
     service: Service,
 };
+
+export type TimeEntryTemplateContent = Omit<TimeEntry, 'date_at'>;
+
+export type TimeEntryTemplate = {
+    id: string,
+    name: string,
+    description: string,
+    contents: TimeEntryTemplateContent[],
+};
