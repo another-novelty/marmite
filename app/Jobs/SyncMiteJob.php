@@ -119,24 +119,42 @@ class SyncMiteJob implements ShouldQueue
             // clear all data for this MiteAccess instance
             $mite_access->entries()->delete();
         }
+        // TODO: Else write any new entries to mite, which do not have a mite id.
+        // TODO: If they do have a mite id, but that id is in mite (anymore), then delete them here.
+
         // refresh the list of time entries for this MiteAccess instance
         $time_entries = Entry::miteGetAll($mite_access);
+        /** @var Entry $time_entry */
         foreach ($time_entries as $time_entry) {
             $project_id = null;
             if ($time_entry->project !== null) {
                 $project = Project::where('mite_id', $time_entry->project->mite_id)->first();
+                // TODO: if the project does not exist, we should create it
                 $project_id = $project->id;
             }
 
             $service_id = null;
             if ($time_entry->service !== null) {
                 $service = Service::where('mite_id', $time_entry->service->mite_id)->first();
+                // TODO: if the service does not exist, we should create it
                 $service_id = $service->id;
             }
 
+            // Check if the time entry already exists in the database
             $db_time_entry = Entry::where('mite_id', $time_entry->mite_id)->first();
             if ($db_time_entry === null) {
-                // if not, create it
+                // check if the marmite id in the notes is set
+                // TODO: There is a chance that the marmite id in mite is wrong or a duplicate. We should check if the marmite id is unique during the sync
+                $time_entry->getMarmiteIdFromMite();
+                if ($time_entry->marmite_id !== null) {
+                    $db_time_entry = Entry::find($time_entry->marmite_id);
+                    // TODO: if the db entry does not exist, then we should force update the marmite in in mite
+                }
+            }
+
+            // if null, entry does not exist in the database
+            if ($db_time_entry === null) {
+                // create it
                 $time_entry->project_id = $project_id;
                 $time_entry->service_id = $service_id;
                 $time_entry->save();

@@ -62,7 +62,7 @@ trait HasMiteSync
         return $query->where('last_synced_at', '>=', now()->startOfDay());
     }
 
-    public static function miteGetAll(MiteAccess $miteAccess, $query = [])
+    public static function miteGetAll(MiteAccess $miteAccess, $query = []) : \Illuminate\Support\Collection
     {
         $mite = $miteAccess->mite();
 
