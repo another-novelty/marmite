@@ -25,10 +25,14 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->timestamps();
             $table->foreignUuid('time_entry_template_id')->constrained()->cascadeOnDelete();
-            $table->foreignUuid('project_id')->constrained()->cascadeOnDelete()->nullable();
-            $table->foreignUuid('service_id')->constrained()->cascadeOnDelete()->nullable();
+            $table->foreignUuid('project_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignUuid('service_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('note')->nullable();
             $table->integer('minutes');
+        });
+
+        Schema::table("entries", function (Blueprint $table) {
+            $table->foreignUuid('time_entry_template_content_id')->nullable()->constrained()->nullOnDelete();
         });
     }
 
@@ -37,6 +41,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table("entries", function(Blueprint $table){
+            $table->dropConstrainedForeignId('time_entry_template_content_id');
+            $table->dropColumn('time_entry_template_content_id');
+        });
         Schema::dropIfExists('time_entry_template_contents');
         Schema::dropIfExists('time_entry_templates');
     }

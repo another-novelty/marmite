@@ -2,17 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MiteAccess;
 use App\Models\TimeEntryTemplate;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class TimeEntryTemplateController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(string $id)
     {
-        //
+        $mite_access = MiteAccess::find($id);
+
+        $customers = $mite_access->customers()->with('projects')->get();
+        $services = $mite_access->services()->get();
+        $time_entries = $mite_access->entries()->with("service")->with("project")->get();
+        $templates = $mite_access->templates()->with("contents")->get();
+
+        return Inertia::render('Calendar/TimeEntryTemplate',
+            [
+                'miteAPIKey' => $mite_access,
+                'customers' => $customers,
+                'services' => $services,
+                'time_entries' => $time_entries,
+                'templates' => $templates,
+            ]
+        );
     }
 
     /**
