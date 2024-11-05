@@ -3,11 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\SyncMiteJob;
-use App\Models\Customer;
-use App\Models\Entry;
 use App\Models\MiteAccess;
-use App\Models\Project;
-use App\Models\Service;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -18,14 +14,14 @@ class SyncMite extends Command
      *
      * @var string
      */
-    protected $signature = 'app:sync-mite {--clear} {id=all}';
+    protected $signature = 'app:sync-mite {--clear : Clear all mite data before syncing} {id=all : The id of the MiteAccess instance to sync or "all"}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Sync all MiteAccess instances or a specific one';
 
     protected function syncMiteAccess(MiteAccess $mite_access, bool $clear){
         // start the sync job

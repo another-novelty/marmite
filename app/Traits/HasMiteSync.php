@@ -95,42 +95,11 @@ trait HasMiteSync
         return $query;
     }
 
-    public function setMarmiteIdInNote($save = true)
-    {
-        // check if the model has a mite_id in the notes
-        // if not, add it
-        if (strpos($this->note, 'marmite_id: ') === false) {
-            $this->note = $this->note. "\nmarmite_id: " . $this->id . "\n";
-        } else {
-            // if it does, update it
-            $this->note = preg_replace('/marmite_id: [\da-fA-F\-]+\n/', 'marmite_id: ' . $this->id . "\n", $this->note);
-        }
-        
-        if ($save) {
-            $this->save();
-        }
-    }
-
-    public function getMarmiteIdFromMite()
-    {
-        $mite_id = null;
-
-        if (strpos($this->note, 'marmite_id: ') !== false) {
-            $matches = [];
-            preg_match('/marmite_id: ([\da-fA-F\-]+)/', $this->note, $matches);
-            $mite_id = $matches[1];
-        }
-
-        return $mite_id;
-    }
-
     public function syncBack()
     {
         $miteAccess = $this->miteAccess;
         /** @var MiteApiClient $mite */
         $mite = $miteAccess->mite();
-
-        $this->setMarmiteIdInNote(false);
 
         if ($this->mite_id) {
             Log::info('Updating entry in mite', ['entry' => $this->toArray()]);

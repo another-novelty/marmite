@@ -142,25 +142,25 @@ class SyncMiteJob implements ShouldQueue
 
             // Check if the time entry already exists in the database
             $db_time_entry = Entry::where('mite_id', $time_entry->mite_id)->first();
-            if ($db_time_entry === null) {
-                // check if the marmite id in the notes is set
-                // TODO: There is a chance that the marmite id in mite is wrong or a duplicate. We should check if the marmite id is unique during the sync
-                $time_entry->getMarmiteIdFromMite();
-                if ($time_entry->marmite_id !== null) {
-                    $db_time_entry = Entry::find($time_entry->marmite_id);
-                    // TODO: if the db entry does not exist, then we should force update the marmite in in mite
-                }
-            }
 
             // if null, entry does not exist in the database
             if ($db_time_entry === null) {
                 // create it
                 $time_entry->project_id = $project_id;
                 $time_entry->service_id = $service_id;
+                // dd($time_entry);
                 $time_entry->save();
             } else {
                 // if it does, update it
                 $db_time_entry->update($time_entry->toArray());
+            }
+        }
+
+        // delete any time entries that are not in Mite anymore
+        $mite_ids = $time_entries->pluck('mite_id')->toArray();
+        foreach(Entry::all() as $entry) {
+            if (!in_array($entry->mite_id, $mite_ids)) {
+                $entry->delete();
             }
         }
 
