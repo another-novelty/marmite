@@ -6,7 +6,7 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
 import { User } from '@/types';
 
-export default function Authenticated({ user, header, children }: PropsWithChildren<{ user: User, header?: ReactNode }>) {
+export default function Authenticated({ user, header, children, miteApiKeys }: PropsWithChildren<{ user: User, header?: ReactNode, miteApiKeys: {id: string, name: string}[] }>) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
@@ -25,9 +25,21 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 <NavLink href={route('dashboard')} active={route().current('dashboard')}>
                                     Dashboard
                                 </NavLink>
-                                <NavLink href={route('calendar.index')} active={route().current('calendar.index')}>
-                                    Calendar
-                                </NavLink>
+                                { miteApiKeys?.length === 1 && (
+                                    <NavLink href={route('calendar.show', {id: miteApiKeys[0].id})} active={route().current('calendar.show')}>
+                                        Calendar
+                                    </NavLink>
+                                )}
+                                { miteApiKeys?.length > 1 && (
+                                    <NavLink href={route('calendar.index')} active={route().current('calendar.index')}>
+                                        Calendar
+                                    </NavLink>
+                                )}
+                                { miteApiKeys?.length === 1 && (
+                                    <NavLink href={route('templates.index', miteApiKeys[0].id)} active={route().current('templates.index')}>
+                                        Templates
+                                    </NavLink>
+                                )}
                             </div>
                         </div>
 

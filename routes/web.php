@@ -4,6 +4,9 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\MiteAccessController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TimeEntryController;
+use App\Http\Controllers\TimeEntryTemplateContentActivityController;
+use App\Http\Controllers\TimeEntryTemplateContentController;
+use App\Http\Controllers\TimeEntryTemplateController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -21,7 +24,7 @@ use Ramsey\Uuid\Type\Time;
 |
 */
 
-Route::get('/', function () {
+Route::get('/welcome', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
@@ -30,7 +33,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
+Route::get('/', function () {
     return Inertia::render('Dashboard', [
         'hasMiteAccess' => Auth::user()->miteAccesses->isNotEmpty(),
         'miteApiKeys' => Auth::user()->miteAccesses,
@@ -56,6 +59,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::resource('entries', TimeEntryController::class)->only(['store', 'update', 'destroy']);
+
+    Route::prefix('mite_access/{mite_access}')->group(function () {
+        Route::resource('templates', TimeEntryTemplateController::class);
+    });
+
+    Route::resource('timeEntryTemplateContent', TimeEntryTemplateContentController::class)->only(['store', 'update', 'destroy']);
+    Route::resource('timeEntryTemplateContentActivity', TimeEntryTemplateContentActivityController::class)->only(['store', 'update', 'destroy']);
 });
 
 require __DIR__.'/auth.php';

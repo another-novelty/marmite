@@ -60,4 +60,8 @@ class User extends Authenticatable
     public function projects() {
         return $this->hasManyThrough(Project::class, Customer::class);
     }
+
+    public function templates() {
+        return $this->hasManyThrough(TimeEntryTemplate::class, MiteAccess::class);
+    }
 }

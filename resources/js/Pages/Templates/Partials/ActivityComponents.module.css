@@ -1,0 +1,128 @@
+.activities {
+  @apply flex
+        flex-col
+        gap-5;
+}
+    
+.deleteButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  p {
+    @apply p-2
+          text-red-500
+          dark:text-red-400;
+  }
+  button {
+    flex-basis: 0;
+    @apply cursor-pointer
+          p-5
+          text-gray-800
+          dark:text-gray-200
+          hover:bg-red-500
+          hover:text-white;
+  }
+  .cancelButton {
+    @apply cursor-pointer
+          p-5
+          text-gray-800
+          dark:text-gray-200
+          hover:bg-gray-200
+          dark:hover:bg-gray-500;
+  }
+}
+
+.activityForm {
+  .activityMinutes, .activityPriority, .activityCronExpression {
+    display: none;
+  }
+
+  @apply flex 
+        flex-col 
+        border
+        border-gray-300
+        rounded-md;
+
+  .title {
+    @apply 
+          cursor-pointer
+          rounded-md
+          hover:bg-gray-100
+          dark:hover:bg-gray-700
+          flex
+          justify-between
+          items-center
+          overflow-hidden;
+    h3 {
+      @apply p-5
+            font-bold 
+            text-gray-800 
+            dark:text-gray-200;
+    }
+  }
+  &.edit {
+    .title {
+      @apply rounded-b-none
+            border-b
+            border-gray-300;
+    }
+  }
+
+  &.titleEmpty .title {
+    @apply text-gray-500
+          dark:text-gray-400
+          font-normal
+          italic;
+  }
+
+  .alwaysActive, .randomAllowed {
+    @apply border 
+          border-gray-300 
+          p-1
+          rounded-md
+          justify-self-start
+          ml-2
+          text-xs;
+  }
+
+  .editForm {
+    @apply flex 
+          flex-col 
+          gap-5
+          p-5;
+  }
+
+  .activityToggles {
+    @apply flex 
+          flex-row 
+          justify-start 
+          items-center
+          gap-5;
+  }
+}
+
+.checkbox {
+  @apply border 
+        border-gray-300 
+        p-1 
+        rounded-md 
+        cursor-pointer;
+  
+  input[type="checkbox"] {
+    display: none;
+  }
+
+  label {
+    @apply cursor-pointer;
+  }
+
+  &.checked {
+    @apply bg-blue-500
+          dark:bg-blue-900
+          text-white;
+    label {
+      @apply text-white
+            select-none;
+    }
+  }
+}

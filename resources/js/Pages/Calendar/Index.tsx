@@ -8,7 +8,7 @@ import {EditTimeEntryForm, TimeEntryCell} from './Partials/TimeEntryForm';
 import { Customer, Service, TimeEntry, TimeEntryTemplate } from '@/types/calendar';
 import Modal from '@/Components/Modal';
 
-export default function CalendarComponent({ auth, miteAPIKey, customers = [], services = [], time_entries = [] }:
+export default function CalendarComponent({ auth, miteAPIKey, customers = [], services = [], time_entries = [], mite }:
   PageProps<{
     miteAPIKey: { id: string, name: string },
     customers?: Customer[],
@@ -16,7 +16,6 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
     time_entries?: TimeEntry[],
     time_entry_templates?: TimeEntryTemplate[],
   }>) {
-
   const [range, setRange] = useState<{ start: Date | null, end: Date | null}>({ start: null, end: null});
 
   const onSelect = useCallback((start: Date|null, end: Date|null) => {
@@ -61,6 +60,7 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
     <AuthenticatedLayout
       user={auth.user}
       header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Calendar {miteAPIKey.name}</h2>}
+      miteApiKeys={mite.apiKeys}
     >
       <Head title="Calendar" />
 

@@ -244,7 +244,7 @@ function MonthView({className = "", selectedMonth, timeEntries = [], onSelect, s
         withinRange: false
       }
     });
-  }, [selectedMonth, timeEntries, state]);
+  }, [selectedMonth, timeEntries, state, state.rangeStart, state.rangeEnd]);
 
   const onClickStart = useCallback((date: Date, e: React.MouseEvent<HTMLDivElement>)=>{
     if (e.shiftKey){
@@ -326,6 +326,18 @@ function MonthView({className = "", selectedMonth, timeEntries = [], onSelect, s
   )
 }
 
+function Toggle({className = "", value, onChange, children}: {className?: string, value: boolean, onChange: (value: boolean) => any, children: React.ReactNode}) {
+  const classes = classNames({
+    [css.toggle]: true,
+    [className]: className,
+    [css.active]: value,
+  });
+
+  return (<div className={classes} onClick={() => onChange(!value)}>
+    {children}
+  </div>)
+}
+
 export default function Calendar({className = "", onSelect, customers = [], services = [], entries = []} : 
   {
     className?: string, 
@@ -357,13 +369,16 @@ export default function Calendar({className = "", onSelect, customers = [], serv
     setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1));
   }, [selectedMonth]);
 
+  const [showWeekend, setShowWeekend] = useState(false);
+
   return (<div className={className + " " + css.calendar}>
     <div className={css.navbar}>
       <button onClick={previousMonth}>Previous</button>
       {selectedMonth.toLocaleDateString('default', {month: 'long', year: 'numeric'})}
       <button onClick={nextMonth}>Next</button>
     </div>
-    <MonthView selectedMonth={selectedMonth} timeEntries={entries} onSelect={onSelect}/>
+    <MonthView selectedMonth={selectedMonth} timeEntries={entries} onSelect={onSelect} showWeekend={showWeekend}/>
+    <Toggle value={showWeekend} onChange={setShowWeekend}>{showWeekend ? 'Hide' : 'Show'} Weekend</Toggle>
   </div>
   )
 }

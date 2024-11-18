@@ -12,6 +12,8 @@ class TimeEntryTemplate extends Model
 
     protected $fillable = ['name', 'description', 'mite_access_id'];
 
+    protected $with = ['contents'];
+    
     public function contents()
     {
         return $this->hasMany(TimeEntryTemplateContent::class);

@@ -1,4 +1,3 @@
-
 .calendar {
   @media (prefers-color-scheme: dark) {
     color: white;
@@ -26,7 +25,6 @@
 .month {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  //grid-gap: 1em;
 
   grid-template-areas:
     "monday tuesday wednesday thursday friday";
@@ -67,10 +65,10 @@
 
   .sunday, .saturday {
     display: none;
+  }
 
-    .showWeekend & {
-      display: block;
-    }
+  &.showWeekend > .sunday, &.showWeekend > .saturday {
+    display: block;
   }
 }
 

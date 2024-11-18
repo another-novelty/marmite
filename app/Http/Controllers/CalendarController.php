@@ -9,6 +9,18 @@ use Inertia\Inertia;
 
 class CalendarController extends Controller
 {
+
+    public function index()
+    {
+        $mite_accesses = MiteAccess::where('user_id', auth()->id())->get();
+
+        return Inertia::render('Calendar/Index',
+            [
+                'miteAPIKeys' => $mite_accesses,
+            ]
+        );
+    }
+
     public function show(string $id)
     {
         $mite_access = MiteAccess::find($id);
