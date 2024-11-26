@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\MiteAccess;
-use App\Models\TimeEntryTemplate;
+use App\Models\Template;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
-class TimeEntryTemplateController extends Controller
+class TemplateController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -75,27 +75,27 @@ class TimeEntryTemplateController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $template = new TimeEntryTemplate();
+        $template = new Template();
         $template->name = $request->name;
         $template->description = $request->description;
         $template->mite_access_id = $mite_access->id;
         $template->save();
 
-        return redirect()->route('templates.show', [$mite_access->id, $template->id]);
+        return redirect()->route('template.show', [$mite_access->id, $template->id]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(MiteAccess $mite_access, TimeEntryTemplate $template)
+    public function show(MiteAccess $mite_access, Template $template)
     {
-        return redirect()->route('templates.edit', [$mite_access->id, $template->id]);
+        return redirect()->route('template.edit', [$mite_access->id, $template->id]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, MiteAccess $mite_access, TimeEntryTemplate $template)
+    public function edit(Request $request, MiteAccess $mite_access, Template $template)
     {
         if ($mite_access->user_id != auth()->id()) {
             abort(403);
@@ -104,13 +104,13 @@ class TimeEntryTemplateController extends Controller
         $customers = $mite_access->customers()->with('projects')->get();
         $services = $mite_access->services()->get();
 
-        if ($request->selectedTemplateContentId) {
-            $selectedTemplateContent = $template->contents->where('id', $request->selectedTemplateContentId)->first();
-            if ($selectedTemplateContent == null) {
-                return redirect()->route('templates.edit', [$mite_access->id, $template->id]);
+        if ($request->selectedContentId) {
+            $selectedContent = $template->contents->where('id', $request->selectedContentId)->first();
+            if ($selectedContent == null) {
+                return redirect()->route('template.edit', [$mite_access->id, $template->id]);
             }
         } else {
-            $selectedTemplateContent = null;
+            $selectedContent = null;
         }
 
         return Inertia::render('Templates/Edit',
@@ -119,7 +119,7 @@ class TimeEntryTemplateController extends Controller
                 'customers' => $customers,
                 'services' => $services,
                 'template' => $template,
-                'selectedTemplateContent' => $selectedTemplateContent,
+                'selectedContent' => $selectedContent,
             ]
         );
     }
@@ -127,9 +127,8 @@ class TimeEntryTemplateController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TimeEntryTemplate $timeEntryTemplate)
+    public function update(Request $request, MiteAccess $mite_access, Template $template)
     {
-        $mite_access = $timeEntryTemplate->mite_access;
         if ($mite_access->user_id != auth()->id()) {
             abort(403);
         }
@@ -141,17 +140,17 @@ class TimeEntryTemplateController extends Controller
 
         // TODO also update activities
 
-        $timeEntryTemplate->name = $request->name;
-        $timeEntryTemplate->description = $request->description;
-        $timeEntryTemplate->save();
+        $template->name = $request->name;
+        $template->description = $request->description;
+        $template->save();
 
-        return redirect()->route('templates.show', [$mite_access->id, $timeEntryTemplate->id]);
+        return redirect()->route('template.show', [$mite_access->id, $template->id]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(MiteAccess $mite_access, TimeEntryTemplate $template)
+    public function destroy(MiteAccess $mite_access, Template $template)
     {
         if ($mite_access->user_id != auth()->id()) {
             abort(403);
@@ -160,6 +159,6 @@ class TimeEntryTemplateController extends Controller
 
         $template->delete();
 
-        return redirect()->route('templates.index', $mite_access->id);
+        return redirect()->route('template.index', $mite_access->id);
     }
 }

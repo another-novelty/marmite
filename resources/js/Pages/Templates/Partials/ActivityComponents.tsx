@@ -3,7 +3,7 @@ import css from "./ActivityComponents.module.css";
 import { useCallback, useEffect, useState } from "react";
 import InputLabel from "@/Components/InputLabel";
 import InputError from "@/Components/InputError";
-import { TimeEntryTemplateActivity } from "@/types/calendar";
+import { Activity } from "@/types/calendar";
 import { useForm } from "@inertiajs/react";
 import TextInput from "@/Components/TextInput";
 
@@ -110,15 +110,15 @@ function DeleteButton({ onClick, label = "Delete", className = "", confirm = tru
 }
 
 function ActivityForm({ activity, selected, onSelect, removeActivity, deleteLabel = "Delete", onSaved }: {
-  activity: TimeEntryTemplateActivity,
+  activity: Activity,
   selected?: boolean,
   onSelect?: (activity_id: string | null) => void,
   removeActivity?: (id: string) => void,
   deleteLabel?: string,
-  onSaved?: (activity: TimeEntryTemplateActivity) => void,
+  onSaved?: (activity: Activity) => void,
 }) {
 
-  const { data, setData, patch, post, errors, processing, reset, isDirty } = useForm<TimeEntryTemplateActivity>({
+  const { data, setData, patch, post, errors, processing, reset, isDirty } = useForm<Activity>({
     id: activity.id,
     name: activity.name,
     description: activity.description,
@@ -127,7 +127,7 @@ function ActivityForm({ activity, selected, onSelect, removeActivity, deleteLabe
     is_always_active: activity.is_always_active,
     is_random_allowed: activity.is_random_allowed,
     cron_expression: activity.cron_expression,
-    time_entry_template_content_id: activity.time_entry_template_content_id,
+    content_id: activity.content_id,
   });
 
   const toggleShowEdit = useCallback(() => {
@@ -315,11 +315,11 @@ function ActivityForm({ activity, selected, onSelect, removeActivity, deleteLabe
 }
 
 export function TemplateActivities({ activities, content_id, onAddActivity, onRemoveActivity, onUpdatedActivity}: {
-  activities: TimeEntryTemplateActivity[],
+  activities: Activity[],
   content_id: string,
-  onAddActivity: (activity: TimeEntryTemplateActivity) => void,
+  onAddActivity: (activity: Activity) => void,
   onRemoveActivity: (id: string) => void,
-  onUpdatedActivity?: (activity: TimeEntryTemplateActivity) => void,
+  onUpdatedActivity?: (activity: Activity) => void,
 }) {
 
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
@@ -396,7 +396,7 @@ export function TemplateActivities({ activities, content_id, onAddActivity, onRe
             is_always_active: false,
             is_random_allowed: false,
             cron_expression: '',
-            time_entry_template_content_id: content_id,
+            content_id: content_id,
           }}
           selected={true}
           onSelect={setSelectedActivity}

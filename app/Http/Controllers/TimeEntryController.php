@@ -21,6 +21,10 @@ class TimeEntryController extends Controller
         $request = $request->validated();
         $entries = collect();
         for ($date = new Carbon($request['date_start']); $date <= $request['date_end']; $date->addDay()) {
+            // if the date is a weekend, skip it
+            if ($request["include_weekends"] && $date->isWeekend()) {
+                continue;
+            }
             $entry = new Entry();
             $entry->fill($request);
             $entry->date_at = $date;

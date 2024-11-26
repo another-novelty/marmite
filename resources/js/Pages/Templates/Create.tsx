@@ -1,5 +1,5 @@
 import { PageProps } from "@/types";
-import { Customer, Service, TimeEntryTemplate, TimeEntryTemplateActivity, TimeEntryTemplateContent } from "@/types/calendar";
+import { Customer, Service, Template, Activity, Content } from "@/types/calendar";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, useForm } from "@inertiajs/react";
 import { FormEvent, useCallback, useMemo, useState } from "react";
@@ -14,8 +14,8 @@ import { DurationInput } from "@/Components/CustomTimeInput";
 
 
 function ActivityForm({ activity, setActivity, removeActivity}: {
-  activity: TimeEntryTemplateActivity,
-  setActivity?: (activity: TimeEntryTemplateActivity) => void,
+  activity: Activity,
+  setActivity?: (activity: Activity) => void,
   removeActivity?: () => void,
 }) {
 
@@ -31,8 +31,8 @@ function ActivityForm({ activity, setActivity, removeActivity}: {
 }
 
 function TemplateActivities({ activities, setActivities}: {
-  activities: TimeEntryTemplateActivity[],
-  setActivities?: (activities: TimeEntryTemplateActivity[]) => void,
+  activities: Activity[],
+  setActivities?: (activities: Activity[]) => void,
 }) {
 
   const classes = classNames({
@@ -69,8 +69,8 @@ function TemplateActivities({ activities, setActivities}: {
 }
 
 function TemplateContent({ content, setTemplateContent,  customers, services}: {
-  content: TimeEntryTemplateContent,
-  setTemplateContent: (content: TimeEntryTemplateContent) => void
+  content: Content,
+  setTemplateContent: (content: Content) => void
   customers: Customer[]
   services: Service[]
 }) {
@@ -229,8 +229,8 @@ function TemplateContent({ content, setTemplateContent,  customers, services}: {
                  <button
 type="button"
 onClick={() => {
-  let newContent: TimeEntryTemplateContent[] = JSON.parse(JSON.stringify(data.content));
-  const newActivity: TimeEntryTemplateContent = {
+  let newContent: Content[] = JSON.parse(JSON.stringify(data.content));
+  const newActivity: Content = {
     id: '',
     jitter_increments: 15,
     jitter_minutes: 15,
@@ -256,7 +256,7 @@ export default function CreateTemplate({
   services
 }: PageProps<{
   miteAPIKey: { id: string, name: string },
-  templates: TimeEntryTemplate[],
+  templates: Template[],
   customers: Customer[],
   services: Service[]
 }>) {

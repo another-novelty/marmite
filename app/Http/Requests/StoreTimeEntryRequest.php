@@ -32,6 +32,7 @@ class StoreTimeEntryRequest extends FormRequest
             "project_id" => ["nullable", "string", "exists:projects,id"],
             "service_id" => ["nullable", "string", "exists:services,id"],
             "mite_access_id" => ["required", "string", "exists:mite_accesses,id"],
+            "include_weekends" => ["nullable", "boolean"],
         ];
     }
 }

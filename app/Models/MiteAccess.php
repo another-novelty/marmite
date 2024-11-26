@@ -47,7 +47,7 @@ class MiteAccess extends Model
     }
 
     public function templates() {
-        return $this->hasMany(TimeEntryTemplate::class);
+        return $this->hasMany(Template::class);
     }
 
     public function mite() : MiteApiClient {

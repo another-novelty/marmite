@@ -1,5 +1,5 @@
 import { PageProps} from "@/types";
-import { Customer, Service, TimeEntryTemplate, TimeEntryTemplateActivity, TimeEntryTemplateContent } from "@/types/calendar";
+import { Customer, Service, Template, Activity, Content} from "@/types/calendar";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, useForm } from "@inertiajs/react";
 import {Page} from "@inertiajs/core";
@@ -13,6 +13,7 @@ import InputError from "@/Components/InputError";
 import { ProjectSelect, ServiceSelect } from "@/Components/CustomSelects";
 import { DurationInput, TimeInput } from "@/Components/CustomTimeInput";
 import { TemplateActivities } from "./Partials/ActivityComponents";
+import { on } from "events";
 
 function FormattedTime({ time, className }: { time: Date | string, className?: string }) {
   let date: Date;
@@ -43,17 +44,18 @@ function FormattedTime({ time, className }: { time: Date | string, className?: s
   return <span className={className}>{date.toLocaleTimeString()}</span>;
 }
 
-function TemplateContent({ content, customers, services, selected, onSelect, onSave }: {
-  content: TimeEntryTemplateContent,
+function ContentComponent({ content, customers, services, selected, onSelect, onSave, onReset }: {
+  content: Content,
   customers: Customer[],
   services: Service[],
   selected?: boolean,
   onSelect?: (id: string | null) => void,
-  onSave?: (content: TimeEntryTemplateContent) => void,
+  onSave?: (content: Content) => void,
+  onReset?: () => void,
 }) {
 
-  const { data, setData, delete: destroy, patch, errors, processing, reset, isDirty
-  } = useForm<TimeEntryTemplateContent>({
+  const { data, setData, delete: destroy, patch, post, errors, processing, reset, isDirty
+  } = useForm<Content>({
     id: content.id,
     jitter_increments: content.jitter_increments,
     jitter_minutes: content.jitter_minutes,
@@ -66,6 +68,7 @@ function TemplateContent({ content, customers, services, selected, onSelect, onS
     minutes: content.minutes,
     start_time: content.start_time,
     pause_time: content.pause_time,
+    template_id: content.template_id,
   });
 
   const [showAvanced, setShowAdvanced] = useState(false);
@@ -169,36 +172,51 @@ function TemplateContent({ content, customers, services, selected, onSelect, onS
     if (!dataValid) {
       return;
     }
-    if (data.id === '') {
-      return;
-    }
 
-
-    patch(route('timeEntryTemplateContent.update', { timeEntryTemplateContent: data.id }), {
-      preserveScroll: true,
-      onSuccess: (response: any) => {
-        console.log("Success", response);
-        if (onSave) {
-          onSave(response.props.selectedTemplateContent);
-          reset();
+    if (data.id !== '') {
+      patch(route('content.update', { timeEntryContent: data.id }), {
+        preserveScroll: true,
+        onSuccess: (response: any) => {
+          console.log("Success", response);
+          if (onSave) {
+            onSave(response.props.selectedContent);
+            reset();
+          }
+        },
+        onError: (errors) => {
+          console.error("Errors", errors);
         }
-      },
-      onError: (errors) => {
-        console.error("Errors", errors);
-      }
-    });
+      });
+    } else {
+      post(route('content.store'), {
+        preserveScroll: true,
+        onSuccess: (response: any) => {
+          console.log("Success", response);
+          if (onSave) {
+            onSave(response.props.selectedContent);
+            reset();
+          }
+        },
+        onError: (errors) => {
+          console.error("Errors", errors);
+        }
+      });
+    }
   }, [data, patch, dataValid, reset]);
 
   const destroyContent = useCallback(() => {
     if (data.id === '') {
       return;
     }
-    destroy(route('timeEntryTemplateContent.destroy', { content: data.id }));
+    destroy(route('content.destroy', { content: data.id }));
   }, [data, destroy]);
 
   const cancelEdit = useCallback(() => {
     setShowEdit(false);
     reset();
+    if (onReset) {
+      onReset();
+    }
   }, [reset]);
 
   const debugContent = useCallback(() => {
@@ -379,16 +397,16 @@ function TemplateContent({ content, customers, services, selected, onSelect, onS
   );
 }
 
-function TemplateContentForm({ contents, template_id, customers, services, selectedContentId, onSelectContent, onAddContent, onDeleteContent, onChangedContent }: {
-  contents: TimeEntryTemplateContent[],
+function ContentForm({ contents, template_id, customers, services, selectedContentId, onSelectContent, onAddContent, onDeleteContent, onChangedContent }: {
+  contents: Content[],
   template_id: string,
   customers: Customer[],
   services: Service[],
   selectedContentId?: string,
   onSelectContent: (contentId: string | null) => void,
   onDeleteContent?: (contentId: string) => void,
-  onChangedContent: (content: TimeEntryTemplateContent) => void,
-  onAddContent?: () => void,
+  onChangedContent: (content: Content) => void,
+  onAddContent?: (content: Content) => void,
 }) {
 
   const [showingAdd, setShowingAdd] = useState(false);
@@ -408,7 +426,7 @@ function TemplateContentForm({ contents, template_id, customers, services, selec
   return (
     <div className={classes}>
       {contents.map((content, index) => (
-        <TemplateContent
+        <ContentComponent
           key={index}
           content={content}
           customers={customers}
@@ -420,12 +438,43 @@ function TemplateContentForm({ contents, template_id, customers, services, selec
           onSave={onChangedContent}
         />
       ))}
-      <div>
-        <button
-          type="button"
-          onClick={() => showAddDialog(true)}
-        > Add Entry Template </button>
-      </div>
+      {showingAdd && (
+        <ContentComponent
+          content={{
+            id: '',
+            jitter_increments: 15,
+            jitter_minutes: 0,
+            n_activities: 3,
+            project: null,
+            project_id: null,
+            service: null,
+            service_id: null,
+            activities: [],
+            minutes: 480,
+            start_time: '09:00',
+            pause_time: 60,
+            template_id: template_id
+          }}
+          customers={customers}
+          services={services}
+          selected={true}
+          onSelect={(id) => {
+            onSelectContent(id);
+          }}
+          onSave={onAddContent}
+          onReset={() => {
+            setShowingAdd(false);
+          }}
+        />
+      )}
+      {!showingAdd && (
+        <div>
+          <button
+            type="button"
+            onClick={() => showAddDialog(true)}
+          > Add Entry Template </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -437,24 +486,22 @@ export default function EditTemplate({
   template,
   customers,
   services,
-  selectedTemplateContent,
+  selectedContent,
 }: PageProps<{
   miteAPIKey: { id: string, name: string },
-  template: TimeEntryTemplate,
+  template: Template,
   customers: Customer[],
   services: Service[],
-  selectedTemplateContent: TimeEntryTemplateContent | null,
+  selectedContent: Content | null,
 }> ) {
 
-  const { data, setData, post, errors, processing } = useForm<{
+  const { data, setData, patch, errors, processing } = useForm<{
     name: string,
     description: string,
   }>({
     name: template.name,
     description: template.description ?? '',
   });
-
-  const [content, setContent] = useState<TimeEntryTemplateContent[]>(template.contents);
 
   const saveAll = useCallback((e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -464,7 +511,8 @@ export default function EditTemplate({
     if (data.name === '') {
       return;
     }
-    post(route('templates.update', { mite_access: miteAPIKey.id, template: template.id }), {
+    // {"mite_access": miteAPIKey, "template": template.id}
+    patch(route('template.update', { "mite_access": miteAPIKey.id, "template": template.id }), {
       preserveScroll: true,
       onSuccess: (response) => {
         console.log("Success", response);
@@ -473,18 +521,15 @@ export default function EditTemplate({
         console.error("Errors", errors);
       }
     });
-  }, [post, data, processing]);
+  }, [patch, data, processing]);
 
-  const [selectedContent, setSelectedContent] = useState<TimeEntryTemplateContent | null>(() => {
-    if (selectedTemplateContent) {
-      return selectedTemplateContent;
-    }
-    return null;
-  });
+  const setSelectedContent = useCallback((content: Content | null) => {
+    history.pushState(null, '', route('template.edit', { mite_access: miteAPIKey.id, template: template.id, content: content?.id }));
+  }, []);
 
-  const activityReducer = (state: TimeEntryTemplateActivity[], action: { type: "add" | "update", payload: TimeEntryTemplateActivity} |
+  const activityReducer = (state: Activity[], action: { type: "add" | "update", payload: Activity} |
     {type: "remove", payload: {id: string}} |
-    {type: "set", state_override: TimeEntryTemplateActivity[]}) => {
+    {type: "set", state_override: Activity[]}) => {
     switch (action.type) {
       case 'add':
         return [...state, action.payload];
@@ -506,23 +551,31 @@ export default function EditTemplate({
 
   const [activities, dispatchActivities] = useReducer(activityReducer, selectedContent?.activities ?? []);
 
+  const contentReducer = (state: Content[], action: { type: "add" | "update", payload: Content} | {type: "remove", payload: {id: string}} | {type: "set", state_override: Content[]}) => {
+    switch (action.type) {
+      case 'add':
+        return [...state, action.payload];
+      case 'remove':
+        return state.filter((content) => content.id !== action.payload.id);
+      case 'update':
+        return state.map((content) => {
+          if (content.id === action.payload.id) {
+            return action.payload;
+          }
+          return content;
+        });
+      case 'set':
+        return action.state_override;
+      default:
+        return state;
+    }
+  }
+
+  const [contents, dispatchContents] = useReducer(contentReducer, template.contents);
+
   useEffect(() => {
     dispatchActivities({type: 'set', state_override: selectedContent?.activities ?? []});
   }, [selectedContent]);
-
-  const onChangedContent = useCallback((newContent: TimeEntryTemplateContent) => {
-    // Update the content in the template
-    let newContents = [];
-    for (const oldContent of content) {
-      if (oldContent.id === newContent.id) {
-        newContents.push(newContent);
-      } else {
-        newContents.push(oldContent);
-      }
-    }
-    console.log(newContents);
-    setContent(newContents);
-  }, [content]);
 
   return (
     <AuthenticatedLayout
@@ -574,8 +627,8 @@ export default function EditTemplate({
 
               </div>
               <div>
-                <TemplateContentForm
-                  contents={content}
+                <ContentForm
+                  contents={contents}
                   template_id={template.id}
                   customers={customers}
                   services={services}
@@ -587,10 +640,9 @@ export default function EditTemplate({
                       setSelectedContent(null);
                     }
                   }}
-                  onAddContent={() => {
-                    console.log("Add Content");
-                  }}
-                  onChangedContent={onChangedContent}
+                  onAddContent={(content) => { dispatchContents({type: 'add', payload: content}) }}
+                  onDeleteContent={(contentId) => { dispatchContents({type: 'remove', payload: {id: contentId}}) }}
+                  onChangedContent={(content) => { dispatchContents({type: 'update', payload: content}) }}
                 />
               </div>
             </div>

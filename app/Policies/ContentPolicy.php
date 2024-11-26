@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\TimeEntryTemplate;
+use App\Models\Content;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class TimeEntryTemplatePolicy
+class ContentPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -19,9 +19,9 @@ class TimeEntryTemplatePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, TimeEntryTemplate $timeEntryTemplate): bool
+    public function view(User $user, Content $content): bool
     {
-        return $user->id === $timeEntryTemplate->miteAccess->user_id;
+        return $user->id === $content->template->miteAccess->user_id;
     }
 
     /**
@@ -35,23 +35,23 @@ class TimeEntryTemplatePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, TimeEntryTemplate $timeEntryTemplate): bool
+    public function update(User $user, Content $content): bool
     {
-        return $user->id === $timeEntryTemplate->miteAccess->user_id;
+        return $user->id === $content->template->miteAccess->user_id;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, TimeEntryTemplate $timeEntryTemplate): bool
+    public function delete(User $user, Content $content): bool
     {
-        return $user->id === $timeEntryTemplate->miteAccess->user_id;
+        return $user->id === $content->template->miteAccess->user_id;
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, TimeEntryTemplate $timeEntryTemplate): bool
+    public function restore(User $user, Content $content): bool
     {
         return false;
     }
@@ -59,7 +59,7 @@ class TimeEntryTemplatePolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, TimeEntryTemplate $timeEntryTemplate): bool
+    public function forceDelete(User $user, Content $content): bool
     {
         return false;
     }

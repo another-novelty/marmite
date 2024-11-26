@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Cron\CronExpression;
 
-class TimeEntryTemplateContent extends Model
+class Content extends Model
 {
     use HasFactory, Uuid;
 
-    protected $fillable = ['time_entry_template_id', 'name', 'description', 'project_id', 'service_id', 'minutes', 'start_time', 'pause_time', 'jitter_minutes', 'jitter_increments', 'n_activities'];
+    protected $fillable = ['template_id', 'name', 'description', 'project_id', 'service_id', 'minutes', 'start_time', 'pause_time', 'jitter_minutes', 'jitter_increments', 'n_activities'];
 
     protected $casts = [
         'start_time' => 'datetime:H:i:s',
@@ -22,12 +22,7 @@ class TimeEntryTemplateContent extends Model
 
     public function template()
     {
-        return $this->belongsTo(TimeEntryTemplate::class, 'time_entry_template_id');
-    }
-
-    public function timeEntryTemplate()
-    {
-        return $this->belongsTo(TimeEntryTemplate::class);
+        return $this->belongsTo(Template::class, 'template_id');
     }
 
     public function project()
@@ -42,7 +37,7 @@ class TimeEntryTemplateContent extends Model
 
     public function activities()
     {
-        return $this->hasMany(TimeEntryTemplateContentActivity::class);
+        return $this->hasMany(Activity::class);
     }
 
     public function note($n_activities = 0, Carbon $date_at = null): string

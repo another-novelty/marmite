@@ -25,6 +25,10 @@ class CalendarController extends Controller
     {
         $mite_access = MiteAccess::find($id);
 
+        if ($mite_access == null) {
+            return redirect('/');
+        }
+
         $customers = $mite_access->customers()->with('projects')->get();
         $services = $mite_access->services()->get();
         $time_entries = $mite_access->entries()->with("service")->with("project")->get();

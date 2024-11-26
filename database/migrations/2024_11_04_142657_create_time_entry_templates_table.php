@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('time_entry_templates', function (Blueprint $table) {
+        Schema::create('templates', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->timestamps();
             $table->string('name');
@@ -20,12 +20,12 @@ return new class extends Migration
             $table->unique(['name', 'mite_access_id']);
         });
 
-        Schema::create('time_entry_template_contents', function (Blueprint $table) {
+        Schema::create('contents', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->timestamps();
             $table->string('name')->nullable();
             $table->text('description')->nullable();
-            $table->foreignUuid('time_entry_template_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('template_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('project_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignUuid('service_id')->nullable()->constrained()->nullOnDelete();
             $table->integer('minutes');
@@ -36,10 +36,10 @@ return new class extends Migration
             $table->integer('n_activities')->default(3);
         });
 
-        Schema::create('time_entry_template_content_activities', function (Blueprint $table) {
+        Schema::create('activities', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->timestamps();
-            $table->foreignUuid('time_entry_template_content_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('content_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
             $table->integer('minutes')->nullable();
@@ -48,10 +48,6 @@ return new class extends Migration
             $table->boolean('is_random_allowed')->default(false);
             $table->string('cron_expression')->nullable();
         });
-
-        Schema::table("entries", function (Blueprint $table) {
-            $table->foreignUuid('time_entry_template_content_id')->nullable()->constrained()->nullOnDelete();
-        });
     }
 
     /**
@@ -59,11 +55,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table("entries", function(Blueprint $table){
-            $table->dropConstrainedForeignId('time_entry_template_content_id');
-        });
-        Schema::dropIfExists('time_entry_template_content_activities');
-        Schema::dropIfExists('time_entry_template_contents');
-        Schema::dropIfExists('time_entry_templates');
+        Schema::dropIfExists('activities');
+        Schema::dropIfExists('contents');
+        Schema::dropIfExists('templates');
     }
 };

@@ -36,7 +36,7 @@ export default function Authenticated({ user, header, children, miteApiKeys }: P
                                     </NavLink>
                                 )}
                                 { miteApiKeys?.length === 1 && (
-                                    <NavLink href={route('templates.index', miteApiKeys[0].id)} active={route().current('templates.index')}>
+                                    <NavLink href={route('template.index', miteApiKeys[0].id)} active={route().current('template.index')}>
                                         Templates
                                     </NavLink>
                                 )}

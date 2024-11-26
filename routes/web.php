@@ -4,9 +4,9 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\MiteAccessController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TimeEntryController;
-use App\Http\Controllers\TimeEntryTemplateContentActivityController;
-use App\Http\Controllers\TimeEntryTemplateContentController;
-use App\Http\Controllers\TimeEntryTemplateController;
+use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\ContentController;
+use App\Http\Controllers\TemplateController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -61,11 +61,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('entries', TimeEntryController::class)->only(['store', 'update', 'destroy']);
 
     Route::prefix('mite_access/{mite_access}')->group(function () {
-        Route::resource('templates', TimeEntryTemplateController::class);
+        Route::resource('template', TemplateController::class);
     });
 
-    Route::resource('timeEntryTemplateContent', TimeEntryTemplateContentController::class)->only(['store', 'update', 'destroy']);
-    Route::resource('timeEntryTemplateContentActivity', TimeEntryTemplateContentActivityController::class)->only(['store', 'update', 'destroy']);
+    Route::resource('content', ContentController::class)->only(['store', 'update', 'destroy']);
+    Route::resource('activity', ActivityController::class)->only(['store', 'update', 'destroy']);
 });
 
 require __DIR__.'/auth.php';

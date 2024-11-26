@@ -34,7 +34,7 @@ export type TimeEntry = Timestamps & {
     service_id: string | null,
 };
 
-export type TimeEntryTemplateActivity = Timestamps & {
+export type Activity = Timestamps & {
     id: string,
     name: string,
     description: string,
@@ -43,22 +43,23 @@ export type TimeEntryTemplateActivity = Timestamps & {
     is_always_active: boolean,
     is_random_allowed: boolean,
     cron_expression?: string,
-    time_entry_template_content_id: string,
+    content_id: string,
 };
 
-export type TimeEntryTemplateContent = Omit<TimeEntry, 'date_at' | 'note'> & {
+export type Content = Omit<TimeEntry, 'date_at' | 'note'> & {
     start_time: string,
     pause_time: number,
     minutes: number,
     jitter_minutes: number,
     jitter_increments: number,
     n_activities: number,
-    activities: TimeEntryTemplateActivity[],
+    activities: Activity[],
+    template_id: string
 };
 
-export type TimeEntryTemplate = Timestamps & {
+export type Template = Timestamps & {
     id: string,
     name: string,
     description: string,
-    contents: TimeEntryTemplateContent[],
+    contents: Content[],
 };

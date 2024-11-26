@@ -2,12 +2,12 @@
 
 namespace App\Policies;
 
-use App\Models\TimeEntryTemplateContent;
-use App\Models\TimeEntryTemplateContentActivity;
+use App\Models\Content;
+use App\Models\Activity;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class TimeEntryTemplateContentActivityPolicy
+class ActivityPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -20,7 +20,7 @@ class TimeEntryTemplateContentActivityPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, TimeEntryTemplateContentActivity $timeEntryTemplateContentActivity): bool
+    public function view(User $user, Activity $timeEntryTemplateContentActivity): bool
     {
         return $user->id === $timeEntryTemplateContentActivity->timeEntryTemplateContent->timeEntryTemplate->miteAccess->user_id;
     }
@@ -28,7 +28,7 @@ class TimeEntryTemplateContentActivityPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user, TimeEntryTemplateContent $content): bool
+    public function create(User $user, Content $content): bool
     {
         return $user->id === $content->timeEntryTemplate->miteAccess->user_id;
     }
@@ -36,7 +36,7 @@ class TimeEntryTemplateContentActivityPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, TimeEntryTemplateContentActivity $timeEntryTemplateContentActivity): bool
+    public function update(User $user, Activity $timeEntryTemplateContentActivity): bool
     {
         return $user->id === $timeEntryTemplateContentActivity->timeEntryTemplateContent->timeEntryTemplate->miteAccess->user_id;
     }
@@ -44,7 +44,7 @@ class TimeEntryTemplateContentActivityPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, TimeEntryTemplateContentActivity $timeEntryTemplateContentActivity): bool
+    public function delete(User $user, Activity $timeEntryTemplateContentActivity): bool
     {
         return $user->id === $timeEntryTemplateContentActivity->timeEntryTemplateContent->timeEntryTemplate->miteAccess->user_id;
     }
@@ -52,7 +52,7 @@ class TimeEntryTemplateContentActivityPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, TimeEntryTemplateContentActivity $timeEntryTemplateContentActivity): bool
+    public function restore(User $user, Activity $timeEntryTemplateContentActivity): bool
     {
         return false;
     }
@@ -60,7 +60,7 @@ class TimeEntryTemplateContentActivityPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, TimeEntryTemplateContentActivity $timeEntryTemplateContentActivity): bool
+    public function forceDelete(User $user, Activity $timeEntryTemplateContentActivity): bool
     {
         return false;
     }

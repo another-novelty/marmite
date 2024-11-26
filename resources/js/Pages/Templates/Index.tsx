@@ -1,15 +1,15 @@
 import { PageProps } from "@/types";
-import { Customer, Service, TimeEntryTemplate } from "@/types/calendar";
+import { Customer, Service, Template } from "@/types/calendar";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, useForm } from "@inertiajs/react";
 import { useCallback, useState } from "react";
 
-function TemplateColumn({template, miteAPIKey}: {template: TimeEntryTemplate, miteAPIKey: string}) {
+function TemplateColumn({template, miteAPIKey}: {template: Template, miteAPIKey: string}) {
 
   const { processing, delete: destroy} = useForm({template_id: template.id});
 
   const handleDelete = useCallback(() => {
-    destroy(route('templates.destroy', {
+    destroy(route('template.destroy', {
       mite_access: miteAPIKey, 
       template: template.id
     }), {
@@ -30,7 +30,7 @@ function TemplateColumn({template, miteAPIKey}: {template: TimeEntryTemplate, mi
         <div className="text-sm leading-5 text-gray-900 dark:text-gray-200">{template.name}</div>
       </td>
       <td className="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
-        <a href={route("templates.edit", {"mite_access": miteAPIKey, "template": template.id})} className="text-blue-500 dark:text-blue-300">Edit</a>
+        <a href={route("template.edit", {"mite_access": miteAPIKey, "template": template.id})} className="text-blue-500 dark:text-blue-300">Edit</a>
         <div onClick={handleDelete} className="text-red-500 dark:text-red-300">Delete</div>
       </td>
     </tr>
@@ -46,7 +46,7 @@ export default function Index({
   services
 }: PageProps<{
   miteAPIKey: {id: string, name: string},
-  templates: TimeEntryTemplate[],
+  templates: Template[],
   customers: Customer[],
   services: Service[]
 }>) {
@@ -68,7 +68,7 @@ export default function Index({
           <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg dark:text-white p-10">
             <div className="flex justify-between">
               <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Time Entry Templates</h2>
-              <a href={route('templates.create', miteAPIKey.id)} className="text-blue-500 dark:text-blue-300">Create New Template</a>
+              <a href={route('template.create', miteAPIKey.id)} className="text-blue-500 dark:text-blue-300">Create New Template</a>
             </div>
             <div className="mt-6">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTimeEntryTemplateContentActivityRequest extends FormRequest
+class StoreActivityRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -14,7 +14,7 @@ class StoreTimeEntryTemplateContentActivityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'time_entry_template_content_id' => 'required|exists:time_entry_template_contents,id',
+            'content_id' => 'required|exists:contents,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'minutes' => 'nullable|integer|min:0',

@@ -6,7 +6,7 @@ use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TimeEntryTemplate extends Model
+class Template extends Model
 {
     use HasFactory, Uuid;
 
@@ -16,7 +16,7 @@ class TimeEntryTemplate extends Model
     
     public function contents()
     {
-        return $this->hasMany(TimeEntryTemplateContent::class);
+        return $this->hasMany(Content::class);
     }
 
     public function miteAccess()
@@ -27,5 +27,10 @@ class TimeEntryTemplate extends Model
     public function user()
     {
         return $this->hasOneThrough(User::class, MiteAccess::class);
+    }
+
+    public function entries()
+    {
+        return $this->hasMany(Entry::class);
     }
 }
