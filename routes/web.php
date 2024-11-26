@@ -7,6 +7,7 @@ use App\Http\Controllers\TimeEntryController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\TemplateController;
+use App\Http\Controllers\Auth\KeycloakController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +40,9 @@ Route::get('/', function () {
         'miteApiKeys' => Auth::user()->miteAccesses,
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('login/keycloak', [KeycloakController::class, 'redirectToKeycloak'] )->name('login.keycloak');
+Route::get('auth/callback', [KeycloakController::class, 'handleKeycloakCallback']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

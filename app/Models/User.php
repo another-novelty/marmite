@@ -62,6 +62,10 @@ class User extends Authenticatable
     }
 
     public function templates() {
-        return $this->hasManyThrough(TimeEntryTemplate::class, MiteAccess::class);
+        return $this->hasManyThrough(Template::class, MiteAccess::class);
+    }
+
+    public function socialLogins() {
+        return $this->hasMany(SocialLogin::class);
     }
 }

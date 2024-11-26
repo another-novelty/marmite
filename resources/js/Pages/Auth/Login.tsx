@@ -7,6 +7,16 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
 
+function SocialLoginButton({  }: { }) {
+    return (
+        <Link
+            href={route('login.keycloak')}
+            className="block w-full py-2 text-center bg-gray-800 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
+        >
+            Continue with Keycloak
+        </Link>
+    );
+}
 export default function Login({ status, canResetPassword }: { status?: string, canResetPassword: boolean }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
@@ -92,6 +102,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                     </PrimaryButton>
                 </div>
             </form>
+            <SocialLoginButton />
         </GuestLayout>
     );
 }
