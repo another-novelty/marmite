@@ -34,6 +34,7 @@ export function EditTimeEntryForm({customers, services, id, project_id, service_
       minutes: number,
       note: string,
       mite_access_id: string,
+      include_weekends: boolean,
     }>({
       project_id: project_id ?? "",
       service_id: service_id ?? "",
@@ -42,6 +43,7 @@ export function EditTimeEntryForm({customers, services, id, project_id, service_
       minutes: minutes || 480,
       note: note || "",
       mite_access_id: mite_access_id,
+      include_weekends: false,
     });
   
   const classes = classNames({

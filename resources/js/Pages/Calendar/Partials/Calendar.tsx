@@ -2,7 +2,7 @@ import {useState, useCallback, useMemo, useEffect, useReducer} from "react";
 import classNames from "classnames";
 
 import css from "./Calendar.module.css";
-import { TimeEntry } from "@/types/calendar";
+import { Customer, Service, TimeEntry } from "@/types/calendar";
 import { on } from "events";
 
 const UNDERUTILIZED_THRESHOLD = 480;
@@ -338,46 +338,35 @@ function Toggle({className = "", value, onChange, children}: {className?: string
   </div>)
 }
 
-export default function Calendar({className = "", onSelect, customers = [], services = [], entries = []} : 
+export default function Calendar({className = "", onSelect, customers = [], services = [], entries = [], month, setMonth}:
   {
     className?: string, 
     onSelect?: (start: Date|null, end: Date|null) => any, 
-    customers?: {
-      name: string, 
-      id: string,
-      note: string,
-      projects: {
-        name: string,
-        id: string,
-        note: string,
-      }[],
-    }[], 
-    services?: {
-      name: string, 
-      id: string,
-      note: string,
-    }[],
+    customers?: Customer[], 
+    services?: Service[],
     entries?: TimeEntry[],
+    month: Date,
+    setMonth: (month: Date) => any,
   }) {
-  const [selectedMonth, setSelectedMonth] = useState(new Date());
 
   const nextMonth = useCallback(() => {
-    setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1));
-  }, [selectedMonth]);
+    setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 3));
+
+  }, [setMonth, month]);
 
   const previousMonth = useCallback(() => {
-    setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1));
-  }, [selectedMonth]);
+    setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 3));
+  }, [setMonth, month]);
 
   const [showWeekend, setShowWeekend] = useState(false);
 
   return (<div className={className + " " + css.calendar}>
     <div className={css.navbar}>
       <button onClick={previousMonth}>Previous</button>
-      {selectedMonth.toLocaleDateString('default', {month: 'long', year: 'numeric'})}
+      {month.toLocaleDateString('default', {month: 'long', year: 'numeric'})}
       <button onClick={nextMonth}>Next</button>
     </div>
-    <MonthView selectedMonth={selectedMonth} timeEntries={entries} onSelect={onSelect} showWeekend={showWeekend}/>
+    <MonthView selectedMonth={month} timeEntries={entries} onSelect={onSelect} showWeekend={showWeekend}/>
     <Toggle value={showWeekend} onChange={setShowWeekend}>{showWeekend ? 'Hide' : 'Show'} Weekend</Toggle>
   </div>
   )

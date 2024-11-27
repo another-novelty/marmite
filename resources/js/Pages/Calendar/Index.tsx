@@ -1,20 +1,21 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useCallback, useMemo, useState } from 'react';
 import Calendar from './Partials/Calendar';
 import SyncButton from './Partials/SyncButton';
 import {EditTimeEntryForm, TimeEntryCell} from './Partials/TimeEntryForm';
-import { Customer, Service, TimeEntry, TimeEntryTemplate } from '@/types/calendar';
+import { Customer, Service, TimeEntry, Template } from '@/types/calendar';
 import Modal from '@/Components/Modal';
 
-export default function CalendarComponent({ auth, miteAPIKey, customers = [], services = [], time_entries = [], mite }:
+export default function CalendarComponent({ auth, miteAPIKey, customers = [], services = [], time_entries = [], mite, month }:
   PageProps<{
     miteAPIKey: { id: string, name: string },
     customers?: Customer[],
     services?: Service[],
     time_entries?: TimeEntry[],
-    time_entry_templates?: TimeEntryTemplate[],
+    time_entry_templates?: Template[],
+    month: string,
   }>) {
   const [range, setRange] = useState<{ start: Date | null, end: Date | null}>({ start: null, end: null});
 
@@ -56,6 +57,12 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
     }
   }, [data, setShowDeleteModal]);
 
+  const setMonth = useCallback((next_month: Date) => {
+    console.log("Current month", month, new Date(month).toISOString().split('T')[0]);
+    console.log("Set month", next_month.toISOString().split('T')[0]);
+    router.get(route('calendar.show', {mite_access: miteAPIKey, month: next_month.getFullYear() + "-" + (next_month.getMonth() + 1)}));
+  }, []);
+
   return (
     <AuthenticatedLayout
       user={auth.user}
@@ -86,6 +93,8 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
                 services={services}
                 entries={time_entries}
                 onSelect={onSelect}
+                month={new Date(month)}
+                setMonth={setMonth}
               />
             </div>
             <div className="my-5 p-5 grid grid-cols-3 gap-5">
