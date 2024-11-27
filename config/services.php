@@ -36,6 +36,7 @@ return [
         'default_access_token' => env('MITE_DEFAULT_ACCESS_TOKEN')
     ],
     'keycloak' => [
+        'enabled' => env('KEYCLOAK_ENABLED', false),
         'base_url' => env('KEYCLOAK_BASE_URL'),
         'realms' => env('KEYCLOAK_REALM'),
         'client_id' => env('KEYCLOAK_CLIENT_ID'),

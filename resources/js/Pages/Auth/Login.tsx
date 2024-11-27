@@ -17,7 +17,7 @@ function SocialLoginButton({  }: { }) {
         </Link>
     );
 }
-export default function Login({ status, canResetPassword }: { status?: string, canResetPassword: boolean }) {
+export default function Login({ status, canResetPassword, keycloak_enabled }: { status?: string, canResetPassword: boolean, keycloak_enabled: boolean }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
@@ -102,7 +102,11 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                     </PrimaryButton>
                 </div>
             </form>
-            <SocialLoginButton />
+            {keycloak_enabled && <>
+                <hr className="my-4" />
+                <SocialLoginButton />
+            </>
+            }
         </GuestLayout>
     );
 }
