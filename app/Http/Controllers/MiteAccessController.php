@@ -6,6 +6,7 @@ use App\Http\Requests\StoreMiteAccessRequest;
 use App\Http\Requests\UpdateMiteAccessRequest;
 use App\Jobs\SyncMiteJob;
 use App\Models\MiteAccess;
+use App\Models\SyncJob;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -85,7 +86,11 @@ class MiteAccessController extends Controller
      */
     public function sync(MiteAccess $miteAccess){
         // TODO: Async with response per websocket
-        SyncMiteJob::dispatchSync($miteAccess, true);
+        $job = SyncJob::create([
+            'mite_access_id' => $miteAccess->id,
+            'clear' => true
+        ]);
+        SyncMiteJob::dispatchSync($job);
 
         return Redirect::back()
             ->with('success', 'Syncing with mite...');

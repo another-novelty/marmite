@@ -15,7 +15,8 @@ class MiteAccess extends Model
     public $fillable = [
         'access_token',
         'name',
-        'user_id'
+        'user_id',
+        'syncing'
     ];
 
     public $hidden = [

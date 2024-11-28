@@ -7,6 +7,7 @@ use App\Models\Entry;
 use App\Models\MiteAccess;
 use App\Models\Project;
 use App\Models\Service;
+use App\Models\SyncJob;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -17,16 +18,14 @@ class SyncMiteJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private MiteAccess $mite_access;
-    private bool $clear;
+    private SyncJob $sync_job;
     
     /**
      * Create a new job instance.
      */
-    public function __construct(MiteAccess $mite_access, bool $clear)
+    public function __construct(SyncJob $sync_job)
     {
-        $this->mite_access = $mite_access;
-        $this->clear = $clear;
+        $this->sync_job = $sync_job;
     }
 
     protected function syncCustomers(MiteAccess $mite_access, bool $clear = false, bool $syncBack = false) {
@@ -56,6 +55,7 @@ class SyncMiteJob implements ShouldQueue
                 $customer->syncBack();
             }
         }
+
     }
 
     protected function syncMiteProjects(MiteAccess $mite_access, bool $clear = false, bool $syncBack = false) {
@@ -178,9 +178,12 @@ class SyncMiteJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $mite_access = $this->mite_access;
-        $clear = $this->clear;
+        $mite_access = $this->sync_job->miteAccess;
+        $clear = $this->sync_job->clear;
+
+        $this->sync_job->startNow();
         // TODO get user roles and check if they can sync back
+        // TODO: if an error occurs, save it to the sync job
         $this->syncCustomers($mite_access, $clear, false);
 
         $this->syncMiteProjects($mite_access, $clear, false);
@@ -188,5 +191,7 @@ class SyncMiteJob implements ShouldQueue
         $this->syncMiteServices($mite_access, $clear, false);
 
         $this->syncEntries($mite_access, $clear, true);
+
+        $this->sync_job->finishNow();
     }
 }
