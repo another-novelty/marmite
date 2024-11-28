@@ -1,0 +1,15 @@
+.selectedEntries {
+  @apply my-5 p-5;
+
+}
+.info {
+  @apply text-right align-middle;
+}
+
+.selecetedEntriesGrid {
+  @apply grid grid-cols-3 gap-4;
+}
+
+.calendarActions {
+  @apply flex justify-between my-5;
+}

@@ -335,6 +335,7 @@ function Toggle({className = "", value, onChange, children}: {className?: string
 
   return (<div className={classes} onClick={() => onChange(!value)}>
     {children}
+    <div className={css.toggleOuter}><div className={css.toggleInner}></div></div>
   </div>)
 }
 
@@ -367,7 +368,7 @@ export default function Calendar({className = "", onSelect, customers = [], serv
       <button onClick={nextMonth}>Next</button>
     </div>
     <MonthView selectedMonth={month} timeEntries={entries} onSelect={onSelect} showWeekend={showWeekend}/>
-    <Toggle value={showWeekend} onChange={setShowWeekend}>{showWeekend ? 'Hide' : 'Show'} Weekend</Toggle>
+    <Toggle value={showWeekend} onChange={setShowWeekend}>Show Weekend</Toggle>
   </div>
   )
 }

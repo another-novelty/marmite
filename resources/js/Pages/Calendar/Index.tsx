@@ -7,8 +7,9 @@ import SyncButton from './Partials/SyncButton';
 import { EditTimeEntryForm, TimeEntryCell } from './Partials/TimeEntryForm';
 import { Customer, Service, TimeEntry, Template } from '@/types/calendar';
 import Modal from '@/Components/Modal';
+import css from './Index.module.css';
 
-export default function CalendarComponent({ auth, miteAPIKey, customers = [], services = [], time_entries = [], mite, month }:
+export default function CalendarPage({ auth, miteAPIKey, customers = [], services = [], time_entries = [], mite, month }:
   PageProps<{
     miteAPIKey: { id: string, name: string },
     customers?: Customer[],
@@ -70,6 +71,14 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
 
   }, [shownEntries]);
 
+  const total_hours = useMemo(() => {
+    return time_entries.reduce((acc, entry) => acc + entry.minutes / 60, 0);
+  }, [time_entries]);
+
+  const selected_hours = useMemo(() => {
+    return shownEntries.reduce((acc, entry) => acc + entry.minutes / 60, 0);
+  }, [shownEntries]);
+
   return (
     <AuthenticatedLayout
       user={auth.user}
@@ -78,23 +87,28 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
     >
       <Head title="Calendar" />
 
-      <div className="py-12">
+      <div className="py-12 dark:text-white">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
 
             {mode === "calendar" && (<>
               <div className="p-6 text-gray-900 dark:text-gray-100">
-                <SyncButton
-                  miteAPIKey={miteAPIKey}
-                  onSuccess={() => {
-                    console.log("Synced");
-                  }}
-                  onError={(errors) => {
-                    console.log(errors);
-                  }}
-                >
-                  Sync
-                </SyncButton>
+                <div className={css.calendarActions}>
+                  <SyncButton
+                    miteAPIKey={miteAPIKey}
+                    onSuccess={() => {
+                      console.log("Synced");
+                    }}
+                    onError={(errors) => {
+                      console.log(errors);
+                    }}
+                  >
+                    Sync
+                  </SyncButton>
+                  <div className={css.info}>
+                    Total: {total_hours} hours
+                  </div>
+                </div>
                 <Calendar
                   customers={customers}
                   services={services}
@@ -104,18 +118,22 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
                   setMonth={setMonth}
                 />
               </div>
-              <div className="my-5 p-5 grid grid-cols-3 gap-5">
-                {shownEntries.length > 0 && shownEntries.map((entry) => (
-                  <TimeEntryCell
-                    key={entry.id}
-                    timeEntry={entry}
-                    customers={customers}
-                    services={services}
-                    mite_access_id={miteAPIKey.id}
-                    onDelete={confirmDelete}
-                  />
-                ))}
-              </div>
+              {shownEntries.length > 0 && (
+                <div className={css.selectedEntries}>
+                  <p className={css.info}>Total: {selected_hours} hours</p>
+                  <div className={css.selecetedEntriesGrid}>
+                    {shownEntries.map((entry) => (
+                      <TimeEntryCell
+                        key={entry.id}
+                        timeEntry={entry}
+                        customers={customers}
+                        services={services}
+                        mite_access_id={miteAPIKey.id}
+                        onDelete={confirmDelete}
+                      />))}
+                  </div>
+                </div>
+              )}
               <div className="actions flex justify-center mt-4">
                 <button
                   className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
@@ -134,7 +152,7 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
               </div>
             </>)}
             {mode === "create" && (
-              <div className='dark:text-white p-5'>
+              <div className='p-5'>
                 <h2>Create new Time Entry</h2>
                 <EditTimeEntryForm
                   customers={customers}
@@ -157,7 +175,7 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
           onClose={() => setShowDeleteModal(false)}
           maxWidth="sm"
         >
-          <div className="dark:text-white m-5">
+          <div className="m-5">
             <h2 className="text-xl font-bold">Delete Time Entry</h2>
             <p>Are you sure you want to delete this time entry?</p>
             <div className="flex justify-end gap-5 mt-5">

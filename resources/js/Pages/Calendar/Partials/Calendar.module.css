@@ -258,3 +258,23 @@
     }
   }
 }
+
+.toggle {
+  cursor: pointer;
+  .toggleOuter {
+    @apply rounded-full border-slate-500 w-10 h-5;
+    border-width: 1px;
+    overflow: hidden;
+  }
+  
+  .toggleInner {
+    @apply rounded-full bg-slate-300 w-10 h-5 -translate-x-5 -translate-y-px dark:bg-slate-700;
+    transition: transform 0.3s, background-color 0.3s;
+  }
+
+  &.active {
+    .toggleInner {
+      @apply translate-x-5 bg-slate-500 dark:bg-slate-200;
+    }
+  }
+}
