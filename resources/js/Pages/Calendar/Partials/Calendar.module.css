@@ -261,8 +261,11 @@
 
 .toggle {
   cursor: pointer;
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
   .toggleOuter {
-    @apply rounded-full border-slate-500 w-10 h-5;
+    @apply rounded-full border-slate-500 w-10 h-5 dark:border-slate-200;
     border-width: 1px;
     overflow: hidden;
   }
@@ -275,6 +278,12 @@
   &.active {
     .toggleInner {
       @apply translate-x-5 bg-slate-500 dark:bg-slate-200;
+    }
+  }
+
+  &:hover {
+    .toggleInner {
+      @apply bg-slate-400;
     }
   }
 }
