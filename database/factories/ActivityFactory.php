@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\TimeEntryTemplateContent;
+use App\Models\Content;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\TimeEntryTemplateContentActivity>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Activity>
  */
-class TimeEntryTemplateContentActivityFactory extends Factory
+class ActivityFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,7 +18,7 @@ class TimeEntryTemplateContentActivityFactory extends Factory
     public function definition(): array
     {
         // get a random time entry template content id
-        $timeEntryTemplateContentId = TimeEntryTemplateContent::inRandomOrder()->first()->id;
+        $timeEntryTemplateContentId = Content::inRandomOrder()->first()->id;
 
         $cronExpression = null;
         if ($this->faker->boolean()) {

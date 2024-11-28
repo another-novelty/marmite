@@ -3,9 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\MiteAccess;
-use App\Models\TimeEntryTemplate;
-use App\Models\TimeEntryTemplateContent;
-use App\Models\TimeEntryTemplateContentActivity;
+use App\Models\Template;
+use App\Models\Content;
+use App\Models\Activity;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -32,9 +32,9 @@ class TimeEntryTemplateSeeder extends Seeder
                 return;
             }
             $miteAccesses->each(function (MiteAccess $miteAccess) {
-                $miteAccess->templates()->saveMany(TimeEntryTemplate::factory(3)->make());
+                $miteAccess->templates()->saveMany(Template::factory(3)->make());
                 $miteAccess->templates
-                ->each(function (TimeEntryTemplate $template) use ($miteAccess) {
+                ->each(function (Template $template) use ($miteAccess) {
                     // get all projects and services for this mite access
                     $projects = $miteAccess->projects;
                     $services = $miteAccess->services;
@@ -52,8 +52,8 @@ class TimeEntryTemplateSeeder extends Seeder
                         'minutes' => 480,
                         'start_time' => '09:00:00',
                     ])
-                    ->each(function (TimeEntryTemplateContent $content) {
-                        $content->activities()->saveMany(TimeEntryTemplateContentActivity::factory(3)->make());
+                    ->each(function (Content $content) {
+                        $content->activities()->saveMany(Activity::factory(3)->make());
                     });
                 });
             });

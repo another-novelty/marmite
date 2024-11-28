@@ -1,8 +1,8 @@
-import { PageProps} from "@/types";
-import { Customer, Service, Template, Activity, Content} from "@/types/calendar";
+import { PageProps } from "@/types";
+import { Customer, Service, Template, Activity, Content } from "@/types/calendar";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, useForm } from "@inertiajs/react";
-import {Page} from "@inertiajs/core";
+import { Page, router } from "@inertiajs/core";
 import { FormEvent, useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import classNames from "classnames";
 
@@ -73,7 +73,7 @@ function ContentComponent({ content, customers, services, selected, onSelect, on
 
   const [showAvanced, setShowAdvanced] = useState(false);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("Content", content);
   }, [content]);
 
@@ -124,12 +124,6 @@ function ContentComponent({ content, customers, services, selected, onSelect, on
     }
   }, [onSelect, reset]);
 
-  useEffect(() => {
-    if (!showEdit) {
-      setShowAdvanced(false);
-    }
-  }, [showEdit]);
-
   const endTime = useMemo(() => {
     let start_time = new Date();
     start_time.setSeconds(0);
@@ -174,7 +168,7 @@ function ContentComponent({ content, customers, services, selected, onSelect, on
     }
 
     if (data.id !== '') {
-      patch(route('content.update', { timeEntryContent: data.id }), {
+      patch(route('content.update', { content: data.id }), {
         preserveScroll: true,
         onSuccess: (response: any) => {
           console.log("Success", response);
@@ -222,12 +216,6 @@ function ContentComponent({ content, customers, services, selected, onSelect, on
   const debugContent = useCallback(() => {
     console.log(data);
   }, [data]);
-
-  useEffect(() => {
-    if (showAvanced) {
-      setShowEdit(true);
-    }
-  }, [showAvanced]);
 
   useEffect(() => {
     if (errors.project_id || errors.service_id || errors.minutes || errors.n_activities) {
@@ -286,7 +274,6 @@ function ContentComponent({ content, customers, services, selected, onSelect, on
           value={data.n_activities}
           className="mt-1 block w-full"
           autoComplete="n_activities"
-          isFocused={true}
           onChange={(e) => setData('n_activities', parseInt(e.target.value))}
           required
         />
@@ -302,7 +289,7 @@ function ContentComponent({ content, customers, services, selected, onSelect, on
               value={data.jitter_minutes}
               className="mt-1 block w-full"
               autoComplete="jitter_minutes"
-              isFocused={true}
+              type="number"
               onChange={(e) => setData('jitter_minutes', parseInt(e.target.value))}
               required
             />
@@ -319,7 +306,7 @@ function ContentComponent({ content, customers, services, selected, onSelect, on
               value={data.jitter_increments}
               className="mt-1 block w-full"
               autoComplete="jitter_increments"
-              isFocused={true}
+              type="number"
               onChange={(e) => setData('jitter_increments', parseInt(e.target.value))}
               required
             />
@@ -356,18 +343,12 @@ function ContentComponent({ content, customers, services, selected, onSelect, on
             )}
           </div>
         </>)}
-        {!showAvanced && (<>
-          <input type="hidden" name="jitter_minutes" value={data.jitter_minutes} />
-          <input type="hidden" name="jitter_increments" value={data.jitter_increments} />
-          <input type="hidden" name="start_time" value={data.start_time} />
-          <input type="hidden" name="pause_time" value={data.pause_time} />
-        </>)}
       </div>
       <div className={css.actions}>
         {showEdit && (<>
           <button
             type="button"
-            onClick={() => setShowAdvanced(!showAvanced)}
+            onClick={() => setShowAdvanced(!showAvanced)}	
           > Advanced </button>
           <button
             type="button"
@@ -431,8 +412,9 @@ function ContentForm({ contents, template_id, customers, services, selectedConte
           content={content}
           customers={customers}
           services={services}
-          selected={content.id === selectedContentId}
+          selected={content?.id === selectedContentId}
           onSelect={(id) => {
+            console.log("Content-Component: Selected", id);
             onSelectContent(id);
           }}
           onSave={onChangedContent}
@@ -479,7 +461,7 @@ function ContentForm({ contents, template_id, customers, services, selectedConte
   );
 }
 
-export default function EditTemplate({
+export default function EditTemplatePage({
   auth,
   mite,
   miteAPIKey,
@@ -493,7 +475,7 @@ export default function EditTemplate({
   customers: Customer[],
   services: Service[],
   selectedContent: Content | null,
-}> ) {
+}>) {
 
   const { data, setData, patch, errors, processing } = useForm<{
     name: string,
@@ -524,12 +506,12 @@ export default function EditTemplate({
   }, [patch, data, processing]);
 
   const setSelectedContent = useCallback((content: Content | null) => {
-    history.pushState(null, '', route('template.edit', { mite_access: miteAPIKey.id, template: template.id, content: content?.id }));
-  }, []);
+    router.get(route('template.edit', { mite_access: miteAPIKey.id, template: template.id, selectedContent: content?.id }));
+  }, [miteAPIKey, template]);
 
-  const activityReducer = (state: Activity[], action: { type: "add" | "update", payload: Activity} |
-    {type: "remove", payload: {id: string}} |
-    {type: "set", state_override: Activity[]}) => {
+  const activityReducer = (state: Activity[], action: { type: "add" | "update", payload: Activity } |
+  { type: "remove", payload: { id: string } } |
+  { type: "set", state_override: Activity[] }) => {
     switch (action.type) {
       case 'add':
         return [...state, action.payload];
@@ -551,7 +533,7 @@ export default function EditTemplate({
 
   const [activities, dispatchActivities] = useReducer(activityReducer, selectedContent?.activities ?? []);
 
-  const contentReducer = (state: Content[], action: { type: "add" | "update", payload: Content} | {type: "remove", payload: {id: string}} | {type: "set", state_override: Content[]}) => {
+  const contentReducer = (state: Content[], action: { type: "add" | "update", payload: Content } | { type: "remove", payload: { id: string } } | { type: "set", state_override: Content[] }) => {
     switch (action.type) {
       case 'add':
         return [...state, action.payload];
@@ -574,7 +556,7 @@ export default function EditTemplate({
   const [contents, dispatchContents] = useReducer(contentReducer, template.contents);
 
   useEffect(() => {
-    dispatchActivities({type: 'set', state_override: selectedContent?.activities ?? []});
+    dispatchActivities({ type: 'set', state_override: selectedContent?.activities ?? [] });
   }, [selectedContent]);
 
   return (
@@ -634,15 +616,16 @@ export default function EditTemplate({
                   services={services}
                   selectedContentId={selectedContent?.id}
                   onSelectContent={(contentId) => {
+                    console.log("Selected", contentId);
                     if (contentId) {
                       setSelectedContent(template.contents.find((content) => content.id === contentId) ?? null);
                     } else {
                       setSelectedContent(null);
                     }
                   }}
-                  onAddContent={(content) => { dispatchContents({type: 'add', payload: content}) }}
-                  onDeleteContent={(contentId) => { dispatchContents({type: 'remove', payload: {id: contentId}}) }}
-                  onChangedContent={(content) => { dispatchContents({type: 'update', payload: content}) }}
+                  onAddContent={(content) => { dispatchContents({ type: 'add', payload: content }) }}
+                  onDeleteContent={(contentId) => { dispatchContents({ type: 'remove', payload: { id: contentId } }) }}
+                  onChangedContent={(content) => { dispatchContents({ type: 'update', payload: content }) }}
                 />
               </div>
             </div>
@@ -650,9 +633,9 @@ export default function EditTemplate({
               <TemplateActivities
                 activities={activities}
                 content_id={selectedContent.id}
-                onAddActivity={(activity) => { dispatchActivities({type: 'add', payload: activity}) }}
-                onRemoveActivity={(id) => { dispatchActivities({type: 'remove', payload: {id: id}}) }}
-                onUpdatedActivity={(activity) => { dispatchActivities({type: 'update', payload: activity}) }}
+                onAddActivity={(activity) => { dispatchActivities({ type: 'add', payload: activity }) }}
+                onRemoveActivity={(id) => { dispatchActivities({ type: 'remove', payload: { id: id } }) }}
+                onUpdatedActivity={(activity) => { dispatchActivities({ type: 'update', payload: activity }) }}
               />
             )}
           </div>

@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\TimeEntryTemplate;
+use App\Models\Template;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\TimeEntryTemplateContent>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Content>
  */
-class TimeEntryTemplateContentFactory extends Factory
+class ContentFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,7 +18,7 @@ class TimeEntryTemplateContentFactory extends Factory
     public function definition(): array
     {
         // get a random time entry template id
-        $timeEntryTemplate = TimeEntryTemplate::inRandomOrder()->first();
+        $timeEntryTemplate = Template::inRandomOrder()->first();
 
         // get a random project id or set to null
         $projectId = null;

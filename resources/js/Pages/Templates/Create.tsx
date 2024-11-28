@@ -278,7 +278,7 @@ export default function CreateTemplate({
     if (data.name === '') {
       return;
     }
-    post(route('templates.store', miteAPIKey.id), {
+    post(route('template.store', miteAPIKey.id), {
       preserveScroll: true,
       onSuccess: (response) => {
         console.log("Success", response);
@@ -325,7 +325,6 @@ export default function CreateTemplate({
                     value={data.description}
                     className="mt-1 block w-full"
                     autoComplete="description"
-                    isFocused={true}
                     onChange={(e) => setData('description', e.target.value)}
                   />
 

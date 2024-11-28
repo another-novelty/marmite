@@ -103,9 +103,8 @@ class TemplateController extends Controller
 
         $customers = $mite_access->customers()->with('projects')->get();
         $services = $mite_access->services()->get();
-
-        if ($request->selectedContentId) {
-            $selectedContent = $template->contents->where('id', $request->selectedContentId)->first();
+        if ($request->input('selectedContent')) {
+            $selectedContent = $template->contents->where('id', $request->input('selectedContent'))->first();
             if ($selectedContent == null) {
                 return redirect()->route('template.edit', [$mite_access->id, $template->id]);
             }

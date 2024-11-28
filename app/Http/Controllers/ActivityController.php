@@ -24,7 +24,7 @@ class ActivityController extends Controller
         $activity = Activity::create($request->validated());
 
         // return to the template edit page
-        return redirect()->route('templates.edit', [$activity->content->template->mite_access_id, $activity->content->template->id, 'selectedContentId' => $activity->content->id]);
+        return redirect()->route('template.edit', [$activity->content->template->mite_access_id, $activity->content->template->id, 'selectedContent' => $activity->content->id]);
     }
 
     /**
@@ -40,7 +40,7 @@ class ActivityController extends Controller
         $activity->update($request->validated());
 
         // return to the template edit page
-        return redirect()->route('templates.edit', [$activity->content->template->mite_access_id, $activity->content->template->id, 'selectedContentId' => $activity->content->id]);
+        return redirect()->route('template.edit', [$activity->content->template->mite_access_id, $activity->content->template->id, 'selectedContent' => $activity->content->id]);
     }
 
     /**
@@ -58,6 +58,6 @@ class ActivityController extends Controller
         $activity->delete();
 
         // return to the template edit page
-        return redirect()->route('templates.edit', [$template->mite_access_id, $template->id, 'selectedContentId' => $content->id]);
+        return redirect()->route('template.edit', [$template->mite_access_id, $template->id, 'selectedContent' => $content->id]);
     }   
 }

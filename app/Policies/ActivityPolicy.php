@@ -20,9 +20,9 @@ class ActivityPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Activity $timeEntryTemplateContentActivity): bool
+    public function view(User $user, Activity $activity): bool
     {
-        return $user->id === $timeEntryTemplateContentActivity->timeEntryTemplateContent->timeEntryTemplate->miteAccess->user_id;
+        return $user->id === $activity->template->miteAccess->user_id;
     }
 
     /**
@@ -30,29 +30,29 @@ class ActivityPolicy
      */
     public function create(User $user, Content $content): bool
     {
-        return $user->id === $content->timeEntryTemplate->miteAccess->user_id;
+        return $user->id === $content->template->miteAccess->user_id;
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Activity $timeEntryTemplateContentActivity): bool
+    public function update(User $user, Activity $activity): bool
     {
-        return $user->id === $timeEntryTemplateContentActivity->timeEntryTemplateContent->timeEntryTemplate->miteAccess->user_id;
+        return $user->id === $activity->template->miteAccess->user_id;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Activity $timeEntryTemplateContentActivity): bool
+    public function delete(User $user, Activity $activity): bool
     {
-        return $user->id === $timeEntryTemplateContentActivity->timeEntryTemplateContent->timeEntryTemplate->miteAccess->user_id;
+        return $user->id === $activity->template->miteAccess->user_id;
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Activity $timeEntryTemplateContentActivity): bool
+    public function restore(User $user, Activity $activity): bool
     {
         return false;
     }
@@ -60,7 +60,7 @@ class ActivityPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Activity $timeEntryTemplateContentActivity): bool
+    public function forceDelete(User $user, Activity $activity): bool
     {
         return false;
     }

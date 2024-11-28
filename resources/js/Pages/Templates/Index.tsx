@@ -51,9 +51,7 @@ export default function Index({
   services: Service[]
 }>) {
   const [pageTitle, setPageTitle] = useState<"Time Entry Templates">("Time Entry Templates")
-
-  console.log(templates)
-
+  
   return (
     <AuthenticatedLayout
       user={auth.user}
@@ -80,7 +78,7 @@ export default function Index({
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {templates.map((template) => (
-                    <TemplateColumn template={template} miteAPIKey={miteAPIKey.id} />
+                    <TemplateColumn key={template.id} template={template} miteAPIKey={miteAPIKey.id} />
                   ))}
                 </tbody>
               </table>

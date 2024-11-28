@@ -6,9 +6,9 @@ use App\Models\MiteAccess;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\TimeEntryTemplate>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Template>
  */
-class TimeEntryTemplateFactory extends Factory
+class TemplateFactory extends Factory
 {
     /**
      * Define the model's default state.

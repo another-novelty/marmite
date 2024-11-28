@@ -14,7 +14,7 @@ class UpdateContentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => ['required', 'exists:time_entry_template_contents,id'],
+            'id' => ['required', 'exists:contents,id'],
             'name' => ['nullable', 'string'],
             'description' => ['nullable', 'string'],
             'project_id' => ['nullable', 'exists:projects,id'],

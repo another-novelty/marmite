@@ -155,7 +155,7 @@ function ActivityForm({ activity, selected, onSelect, removeActivity, deleteLabe
 
   const saveActivity = useCallback(() => {
     if (data.id === '') {
-      post(route('timeEntryTemplateContentActivity.store'), {
+      post(route('activity.store'), {
         preserveScroll: true,
         onSuccess: (response) => {
           console.log("Success", response);
@@ -168,7 +168,7 @@ function ActivityForm({ activity, selected, onSelect, removeActivity, deleteLabe
         }
       });
     } else {
-      patch(route('timeEntryTemplateContentActivity.update', { timeEntryTemplateContentActivity: data.id }), {
+      patch(route('activity.update', { activity: data.id }), {
         preserveScroll: true,
         onSuccess: (response) => {
           console.log("Success", response);
@@ -350,7 +350,7 @@ export function TemplateActivities({ activities, content_id, onAddActivity, onRe
 
   const removeActivity = useCallback((id: string) => {
     if (id !== '') {
-      destroy(route('timeEntryTemplateContentActivity.destroy', { timeEntryTemplateContentActivity: id }), {
+      destroy(route('activity.destroy', { activity: id }), {
         preserveScroll: true,
         onSuccess: (response) => {
           console.log("Success", response);

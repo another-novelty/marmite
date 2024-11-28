@@ -56,7 +56,7 @@ class ContentController extends Controller
         $template = $content->template;
         $mite_access = $template->miteAccess;
 
-        return redirect()->route('template.edit', [$mite_access->id, $template->id, 'selectedContentId' => $content->id]);
+        return redirect()->route('template.edit', [$mite_access->id, $template->id, 'selectedContent' => $content->id]);
     }
 
     /**
