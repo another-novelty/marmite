@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\SyncMiteJob;
 use App\Models\MiteAccess;
+use App\Models\SyncJob;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -26,7 +27,11 @@ class SyncMite extends Command
     protected function syncMiteAccess(MiteAccess $mite_access, bool $clear){
         // start the sync job
         Log::info('Syncing MiteAccess ' . $mite_access->id);
-        return SyncMiteJob::dispatchSync($mite_access, $clear);
+        $job = SyncJob::create([
+            'mite_access_id' => $mite_access->id,
+            'clear' => $clear
+        ]);
+        return SyncMiteJob::dispatchSync($job);
     }
 
     /**
