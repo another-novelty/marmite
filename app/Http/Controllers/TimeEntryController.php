@@ -69,4 +69,21 @@ class TimeEntryController extends Controller
         return Redirect::back()
             ->with('success', 'Time entry deleted successfully.');
     }
+
+    /**
+     * Remove multiple entries from storage.
+     */
+    public function destroyMultiple(Request $request)
+    {
+        $entries = Entry::whereIn('id', $request->input('ids'))->get();
+        foreach ($entries as $entry) {
+            // delete the entry from mite
+            // TODO this should be done in a job
+            $entry->deleteFromMite();
+            $entry->delete();
+        }
+
+        return Redirect::back()
+            ->with('success', 'Time entries deleted successfully.');
+    }
 }

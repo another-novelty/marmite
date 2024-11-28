@@ -63,6 +63,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::resource('entries', TimeEntryController::class)->only(['store', 'update', 'destroy']);
+    Route::post('entries/destroyMultiple', [TimeEntryController::class, 'destroyMultiple'])->name('entries.destroyMultiple');
+    Route::post('entries/{entry}/sync', [TimeEntryController::class, 'sync'])->name('entries.sync');
 
     Route::prefix('mite_access/{mite_access}')->group(function () {
         Route::resource('template', TemplateController::class);

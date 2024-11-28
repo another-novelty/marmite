@@ -4,7 +4,7 @@ import { PageProps } from '@/types';
 import { useCallback, useMemo, useState } from 'react';
 import Calendar from './Partials/Calendar';
 import SyncButton from './Partials/SyncButton';
-import {EditTimeEntryForm, TimeEntryCell} from './Partials/TimeEntryForm';
+import { EditTimeEntryForm, TimeEntryCell } from './Partials/TimeEntryForm';
 import { Customer, Service, TimeEntry, Template } from '@/types/calendar';
 import Modal from '@/Components/Modal';
 
@@ -17,9 +17,9 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
     time_entry_templates?: Template[],
     month: string,
   }>) {
-  const [range, setRange] = useState<{ start: Date | null, end: Date | null}>({ start: null, end: null});
+  const [range, setRange] = useState<{ start: Date | null, end: Date | null }>({ start: null, end: null });
 
-  const onSelect = useCallback((start: Date|null, end: Date|null) => {
+  const onSelect = useCallback((start: Date | null, end: Date | null) => {
     setRange({ start, end });
   }, [setRange]);
 
@@ -36,7 +36,7 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
   }, [time_entries, range]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const {data, setData, delete: destroy} = useForm<{id: string|null}>({id: null});
+  const { data, setData, delete: destroy } = useForm<{ id: string | null }>({ id: null });
 
   const confirmDelete = useCallback((id: string) => {
     setData('id', id);
@@ -60,8 +60,15 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
   const setMonth = useCallback((next_month: Date) => {
     console.log("Current month", month, new Date(month).toISOString().split('T')[0]);
     console.log("Set month", next_month.toISOString().split('T')[0]);
-    router.get(route('calendar.show', {mite_access: miteAPIKey, month: next_month.getFullYear() + "-" + (next_month.getMonth() + 1)}));
+    router.get(route('calendar.show', { mite_access: miteAPIKey, month: next_month.getFullYear() + "-" + (next_month.getMonth() + 1) }));
   }, []);
+
+  const deleteSelectedEntries = useCallback(() => {
+    const ids = shownEntries.map((entry) => entry.id);
+    console.log("Delete selected entries", ids);
+    router.post(route('entries.destroyMultiple'), { ids });
+
+  }, [shownEntries]);
 
   return (
     <AuthenticatedLayout
@@ -76,47 +83,55 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
           <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
 
             {mode === "calendar" && (<>
-            <div className="p-6 text-gray-900 dark:text-gray-100">
-              <SyncButton
-                miteAPIKey={miteAPIKey}
-                onSuccess={() => {
-                  console.log("Synced");
-                }}
-                onError={(errors) => {
-                  console.log(errors);
-                }}
-              >
-                Sync
-              </SyncButton>
-              <Calendar
-                customers={customers}
-                services={services}
-                entries={time_entries}
-                onSelect={onSelect}
-                month={new Date(month)}
-                setMonth={setMonth}
-              />
-            </div>
-            <div className="my-5 p-5 grid grid-cols-3 gap-5">
-              { shownEntries.length > 0 && shownEntries.map((entry) => (
-                <TimeEntryCell
-                  key={entry.id}
-                  timeEntry={entry}
+              <div className="p-6 text-gray-900 dark:text-gray-100">
+                <SyncButton
+                  miteAPIKey={miteAPIKey}
+                  onSuccess={() => {
+                    console.log("Synced");
+                  }}
+                  onError={(errors) => {
+                    console.log(errors);
+                  }}
+                >
+                  Sync
+                </SyncButton>
+                <Calendar
                   customers={customers}
                   services={services}
-                  mite_access_id={miteAPIKey.id}
-                  onDelete={confirmDelete}
+                  entries={time_entries}
+                  onSelect={onSelect}
+                  month={new Date(month)}
+                  setMonth={setMonth}
                 />
-              ))}
-            </div>
-            <div className="actions flex justify-center mt-4">
-              <button
-                className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
-                onClick={() => setMode("create")}
-              >
-                Create new time entry
-              </button>
-            </div>
+              </div>
+              <div className="my-5 p-5 grid grid-cols-3 gap-5">
+                {shownEntries.length > 0 && shownEntries.map((entry) => (
+                  <TimeEntryCell
+                    key={entry.id}
+                    timeEntry={entry}
+                    customers={customers}
+                    services={services}
+                    mite_access_id={miteAPIKey.id}
+                    onDelete={confirmDelete}
+                  />
+                ))}
+              </div>
+              <div className="actions flex justify-center mt-4">
+                <button
+                  className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+                  onClick={() => setMode("create")}
+                >
+                  Create new time entry
+                </button>
+                {shownEntries.length > 0 && (
+                  <button
+                    className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'
+                    onClick={deleteSelectedEntries}
+                  >
+                    Delete selected time entries
+                  </button>
+                )}
+              </div>
             </>)}
             {mode === "create" && (
               <div className='dark:text-white p-5'>
@@ -127,8 +142,8 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
                   date_start={range.start ?? new Date()}
                   date_end={range.end ?? new Date()}
                   date_editable={false}
-                  onSubmitted={() => {setMode("calendar")}}
-                  onCanceled={() => {setMode("calendar")}}
+                  onSubmitted={() => { setMode("calendar") }}
+                  onCanceled={() => { setMode("calendar") }}
                   mite_access_id={miteAPIKey.id}
                 />
               </div>
@@ -137,8 +152,8 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
         </div>
 
         <Modal
-          key={"DeleteModal"} 
-          show={showDeleteModal} 
+          key={"DeleteModal"}
+          show={showDeleteModal}
           onClose={() => setShowDeleteModal(false)}
           maxWidth="sm"
         >
@@ -146,13 +161,13 @@ export default function CalendarComponent({ auth, miteAPIKey, customers = [], se
             <h2 className="text-xl font-bold">Delete Time Entry</h2>
             <p>Are you sure you want to delete this time entry?</p>
             <div className="flex justify-end gap-5 mt-5">
-              <button 
+              <button
                 onClick={deleteTimeEntry}
                 className='bg-red-500 hover:bg-red-600 text-white rounded p-4'
               >
                 Delete
               </button>
-              <button 
+              <button
                 onClick={() => setShowDeleteModal(false)}
                 className='bg-gray-500 hover:bg-gray-600 text-white rounded p-4'
               >
