@@ -1,7 +1,7 @@
 import { PageProps } from "@/types";
 import { Customer, Service, Template } from "@/types/calendar";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, Link, useForm } from "@inertiajs/react";
 import { useCallback, useState } from "react";
 
 function TemplateColumn({template, miteAPIKey}: {template: Template, miteAPIKey: string}) {
@@ -27,7 +27,7 @@ function TemplateColumn({template, miteAPIKey}: {template: Template, miteAPIKey:
   return (
     <tr key={template.id}>
       <td className="px-6 py-4 whitespace-no-wrap">
-        <div className="text-sm leading-5 text-gray-900 dark:text-gray-200">{template.name}</div>
+        <Link className="text-sm leading-5 text-gray-900 dark:text-gray-200" href={route("template.edit", {"mite_access": miteAPIKey, "template": template.id})}>{template.name}</Link>
       </td>
       <td className="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
         <a href={route("template.edit", {"mite_access": miteAPIKey, "template": template.id})} className="text-blue-500 dark:text-blue-300">Edit</a>

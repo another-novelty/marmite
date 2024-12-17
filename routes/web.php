@@ -58,17 +58,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/{mite_access}', 'show')->name('calendar.show');
             Route::get('/', 'index')->name('calendar.index');
         });
+        Route::get('{mite_access}/template', [TemplateController::class, 'applyTemplate'])->name('calendar.template');
 
         Route::post('mite-accesses/{mite_access}/sync', [MiteAccessController::class, 'sync'])->name('mite.sync');
     });
 
-    Route::resource('entries', TimeEntryController::class)->only(['store', 'update', 'destroy']);
+    Route::resource('entries', TimeEntryController::class)->only(['store', 'update', 'destroy', 'create']);
+    Route::post('entries/batch', [TimeEntryController::class, 'storeBatch'])->name('entries.storeBatch');
     Route::post('entries/destroyMultiple', [TimeEntryController::class, 'destroyMultiple'])->name('entries.destroyMultiple');
     Route::post('entries/{entry}/sync', [TimeEntryController::class, 'sync'])->name('entries.sync');
 
     Route::prefix('mite_access/{mite_access}')->group(function () {
         Route::resource('template', TemplateController::class);
     });
+
+    Route::get('template/{template}/apply', [TemplateController::class, 'showApplyForm'])->name('template.apply');
 
     Route::resource('content', ContentController::class)->only(['store', 'update', 'destroy']);
     Route::resource('activity', ActivityController::class)->only(['store', 'update', 'destroy']);

@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\Traits\Uuid;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Cron\CronExpression;
+use Dotenv\Util\Str;
 
 class Content extends Model
 {
@@ -15,8 +17,11 @@ class Content extends Model
     protected $fillable = ['template_id', 'name', 'description', 'project_id', 'service_id', 'minutes', 'start_time', 'pause_time', 'jitter_minutes', 'jitter_increments', 'n_activities'];
 
     protected $casts = [
-        'start_time' => 'datetime:H:i:s',
+        'start_time' => 'datetime:H:i',
+        'end_time' => 'datetime:H:i',
     ];
+
+    protected $appends = ['end_time', 'note'];
 
     protected $with = ['activities', 'project', 'service'];
 
@@ -40,6 +45,16 @@ class Content extends Model
         return $this->hasMany(Activity::class);
     }
 
+    public function end_time()
+    {
+        return $this->start_time->addMinutes($this->minutes + $this->pause_time)->format('H:i');
+    }
+
+    public function getEndTimeAttribute(): string
+    {
+        return $this->end_time();
+    }
+
     public function note($n_activities = 0, Carbon $date_at = null): string
     {
         if ($date_at == null) {
@@ -56,9 +71,9 @@ class Content extends Model
             $start_time = $start_time->addMinutes($jitter);
         }
 
-        $end_time = $start_time->addMinutes($this->minutes + $this->pause_time);
+        $end_time = $this->end_time();
         
-        $note = '(' . $this->start_time->format('H:i') . '-' . $end_time->format('H:i') . ')';
+        $note = '(' . $this->start_time->format('H:i') . '-' . $end_time . ')';
         if ($activities->count() == 0) {
             return $note;
         }
@@ -100,6 +115,10 @@ class Content extends Model
         }
 
         return $note;
+    }
+
+    public function getNoteAttribute() : string {
+        return $this->note();
     }
 
     public function apply(Carbon $date_at, bool $save = false): Entry {

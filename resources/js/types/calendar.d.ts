@@ -38,7 +38,7 @@ export type Activity = Timestamps & {
     id: string,
     name: string,
     description: string,
-    minutes?: number,
+    minutes: number | null,
     priority?: number,
     is_always_active: boolean,
     is_random_allowed: boolean,
@@ -54,7 +54,11 @@ export type Content = Omit<TimeEntry, 'date_at' | 'note'> & {
     jitter_increments: number,
     n_activities: number,
     activities: Activity[],
-    template_id: string
+    template_id: string,
+    end_time: string,
+    note: string,
+    project: Project | null,
+    service: Service | null,
 };
 
 export type Template = Timestamps & {

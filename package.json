@@ -27,6 +27,7 @@
     "dependencies": {
         "@tailwindcss/nesting": "^0.0.0-insiders.565cd3e",
         "classnames": "^2.5.1",
-        "react-calendar": "^5.0.0"
+        "react-calendar": "^5.0.0",
+        "react-timer-hook": "^3.0.8"
     }
 }

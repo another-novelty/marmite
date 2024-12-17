@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useCallback, useMemo, useState } from 'react';
 import Calendar from './Partials/Calendar';
@@ -7,15 +7,16 @@ import SyncButton from './Partials/SyncButton';
 import { EditTimeEntryForm, TimeEntryCell } from './Partials/TimeEntryForm';
 import { Customer, Service, TimeEntry, Template } from '@/types/calendar';
 import Modal from '@/Components/Modal';
+import TemplateApply from './TemplateApply';
 import css from './Index.module.css';
 
-export default function CalendarPage({ auth, miteAPIKey, customers = [], services = [], time_entries = [], mite, month }:
+export default function CalendarPage({ auth, miteAPIKey, customers = [], services = [], time_entries = [], mite, templates, month }:
   PageProps<{
     miteAPIKey: { id: string, name: string },
     customers?: Customer[],
     services?: Service[],
     time_entries?: TimeEntry[],
-    time_entry_templates?: Template[],
+    templates: Template[],
     month: string,
   }>) {
   const [range, setRange] = useState<{ start: Date | null, end: Date | null }>({ start: null, end: null });
@@ -24,7 +25,7 @@ export default function CalendarPage({ auth, miteAPIKey, customers = [], service
     setRange({ start, end });
   }, [setRange]);
 
-  const [mode, setMode] = useState<"create" | "edit" | "calendar">("calendar");
+  const [mode, setMode] = useState<"create" | "edit" | "calendar" | "template">("calendar");
 
   const shownEntries = useMemo(() => {
     if (range.start === null || range.end === null) {
@@ -62,7 +63,7 @@ export default function CalendarPage({ auth, miteAPIKey, customers = [], service
     console.log("Current month", month, new Date(month).toISOString().split('T')[0]);
     console.log("Set month", next_month.toISOString().split('T')[0]);
     router.get(route('calendar.show', { mite_access: miteAPIKey, month: next_month.getFullYear() + "-" + (next_month.getMonth() + 1) }));
-  }, []);
+  }, [month, miteAPIKey]);
 
   const deleteSelectedEntries = useCallback(() => {
     const ids = shownEntries.map((entry) => entry.id);
@@ -90,7 +91,6 @@ export default function CalendarPage({ auth, miteAPIKey, customers = [], service
       <div className="py-12 dark:text-white">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-
             {mode === "calendar" && (<>
               <div className="p-6 text-gray-900 dark:text-gray-100">
                 <div className={css.calendarActions}>
@@ -134,7 +134,11 @@ export default function CalendarPage({ auth, miteAPIKey, customers = [], service
                   </div>
                 </div>
               )}
-              <div className="actions flex justify-center mt-4">
+              <div className="actions flex justify-center my-4 gap-4">
+                <button
+                  className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+                  onClick={() => setMode("template")}
+                >Apply a template</button>
                 <button
                   className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
                   onClick={() => setMode("create")}
@@ -151,6 +155,24 @@ export default function CalendarPage({ auth, miteAPIKey, customers = [], service
                 )}
               </div>
             </>)}
+            {mode !== "calendar" && (
+              <button onClick={() => setMode("calendar")} className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
+                Back to calendar
+              </button>
+            )}
+            {mode === "template" && (
+              <div className='p-5'>
+                <h2>Apply a template</h2>
+                {templates.length === 0 && (
+                  <div>
+                    <h3>No templates found</h3>
+                    <p>
+                      You can create templates in the <Link href={route('template.index', {mite_access: miteAPIKey} )}>templates section</Link>.
+                    </p>
+                  </div>
+                )}
+                {templates.length > 0 && <TemplateApply range={range} customers={customers} services={services} templates={templates} />}
+              </div>)}
             {mode === "create" && (
               <div className='p-5'>
                 <h2>Create new Time Entry</h2>

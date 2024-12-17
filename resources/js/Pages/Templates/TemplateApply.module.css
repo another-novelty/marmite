@@ -1,0 +1,50 @@
+.templateApply {
+  @apply p-12 dark:text-white;
+}
+
+.wrapper {
+  @apply max-w-7xl mx-auto sm:px-6 lg:px-8;
+}
+
+.inner {
+  @apply bg-white dark:bg-gray-800 p-4 rounded;
+}
+
+.header {
+  @apply font-bold text-xl dark:text-white;
+}
+
+
+.templates {
+  @apply grid grid-cols-3 gap-4;
+}
+
+.templateButton {
+  @apply py-2 px-4 rounded border-2;
+
+  &.selected {
+    @apply bg-blue-500 text-white;
+  }
+}
+
+.templateDisplay {
+  @apply p-4 border-2 rounded mt-4;
+
+  h3 {
+    @apply text-lg font-bold;
+  }
+}
+
+.timeEntryForm {
+  @apply grid grid-cols-2 gap-4;
+
+  > div {
+    @apply flex flex-col;
+  }
+}
+
+.note, .minutes, .project, .service {
+  input, select {
+    @apply border-2 rounded p-2 dark:bg-gray-800;
+  }
+}

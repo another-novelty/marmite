@@ -393,9 +393,6 @@ function ContentForm({ contents, template_id, customers, services, selectedConte
   const [showingAdd, setShowingAdd] = useState(false);
 
   const showAddDialog = useCallback((value: boolean) => {
-    if (onSelectContent) {
-      onSelectContent(null);
-    }
     setShowingAdd(value);
   }, []);
 

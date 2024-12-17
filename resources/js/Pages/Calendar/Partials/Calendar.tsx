@@ -1,6 +1,5 @@
 import {useState, useCallback, useMemo, useEffect, useReducer} from "react";
 import classNames from "classnames";
-
 import css from "./Calendar.module.css";
 import { Customer, Service, TimeEntry } from "@/types/calendar";
 import { on } from "events";
@@ -61,7 +60,7 @@ function DateCell({date, className = "", timeEntries, onClickStart, onClickEnd, 
     isRangeStart?: boolean,
     isRangeEnd?: boolean,
   }) { 
-  const weekday = useMemo(() => date.toLocaleDateString('default', {weekday: 'long'}).toLowerCase(), [date]);
+  const weekday = useMemo(() => date.toLocaleDateString('en', {weekday: 'long'}).toLowerCase(), [date]);
   const first = useMemo(() => date.getDate() === 1, [date]);
 
   const minutes = useMemo(() => timeEntries?.reduce((acc, entry) => acc + entry.minutes, 0) ?? 0, [timeEntries]);

@@ -1,0 +1,26 @@
+import css from "{{ pageName }}.module.css";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { PageProps } from '@/types';
+import classNames from "classnames";
+
+export default function {{ pageName }}Page({ auth }:
+  PageProps<{
+    // add page props here
+  }>) {
+  const classes = classNames({
+    [css.{{ pageClassName }}]: true
+  });
+
+  return (
+    <AuthenticatedLayout
+      user={auth.user}
+      header={<h1 className={css.header}> {{ pageName }}</h1>}
+    >
+      <Head title="{{ pageName }}" />
+      <div className={classes}>
+
+      </div>
+    </AuthenticatedLayout>
+  )
+}

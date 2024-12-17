@@ -1,0 +1,7 @@
+.{{ pageComponent }} {
+  
+}
+
+.header {
+  @apply font-bold text-xl dark:text-white;
+}

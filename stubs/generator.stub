@@ -1,0 +1,50 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Console\GeneratorCommand;
+
+class {{ class }} extends GeneratorCommand
+{
+  /**
+   * The console command name.
+   *
+   * @var string
+   */
+  protected $name = '{{ commandName }}';
+
+  /**
+   * The console command description.
+   *
+   * @var string
+   */
+  protected $description = 'Create a new {{ classType }}';
+
+  /**
+   * The type of class being generated.
+   *
+   * @var string
+   */
+  protected $type = '{{ classType }}';
+
+  /**
+   * Get the stub file for the generator.
+   *
+   * @return string
+   */
+  protected function getStub()
+  {
+    return __DIR__ . '/stubs/{{ stubName }}.stub';
+  }
+
+  /**
+   * Get the default namespace for the class.
+   *
+   * @param  string  $rootNamespace
+   * @return string
+   */
+  protected function getDefaultNamespace($rootNamespace)
+  {
+    return $rootNamespace . '\{{ namespace }}';
+  }
+}

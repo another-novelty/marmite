@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTimeEntryBatchRequest;
 use App\Http\Requests\StoreTimeEntryRequest;
 use App\Http\Requests\UpdateTimeEntryRequest;
 use App\Jobs\SyncTimeEntries;
 use App\Models\Entry;
+use App\Models\MiteAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
@@ -21,6 +23,11 @@ class TimeEntryController extends Controller
         $request = $request->validated();
         $entries = collect();
         for ($date = new Carbon($request['date_start']); $date <= $request['date_end']; $date->addDay()) {
+            // check if the request constains include_weekends
+            if (!isset($request["include_weekends"])) {
+                $request["include_weekends"] = false;
+            }
+
             // if the date is a weekend, skip it
             if ($request["include_weekends"] && $date->isWeekend()) {
                 continue;
@@ -31,6 +38,51 @@ class TimeEntryController extends Controller
             $entry->save();
             Log::info('Time entry created', ['entry' => $entry->toArray()]);
             $entries->push($entry);
+        }
+
+        // schedule a sync for the new entries
+        SyncTimeEntries::dispatchSync($entries);
+
+        return Redirect::back()
+            ->with('success', 'Time entry created successfully.');
+    }
+
+    /**
+     * Store multiple entries in storage.
+     */
+    public function storeBatch(StoreTimeEntryBatchRequest $request)
+    {
+        $miteAccess = MiteAccess::find($request->mite_access_id);
+        if ($miteAccess == null) {
+            abort(404);
+        }
+        if ($miteAccess->user_id != auth()->id()) {
+            abort(403);
+        }
+        $request = $request->validated();
+        $entries = collect();
+        
+        for($date = new Carbon($request['date_start']); $date <= $request['date_end']; $date->addDay()) {
+
+
+            // check if the request constains include_weekends
+            if (!isset($request["include_weekends"])) {
+                $request["include_weekends"] = false;
+            }
+
+            // if the date is a weekend, skip it
+            if ($request["include_weekends"] && $date->isWeekend()) {
+                continue;
+            }
+
+            foreach ($request['entries'] as $entry) {
+                $entry['date_at'] = $date;
+                $entry['mite_access_id'] = $miteAccess->id;
+                $entry = new Entry($entry);
+                $entry->save();
+                Log::info('Time entry created', ['entry' => $entry->toArray()]);
+                $entries->push($entry);
+            }
         }
 
         // schedule a sync for the new entries

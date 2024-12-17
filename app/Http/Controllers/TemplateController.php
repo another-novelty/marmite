@@ -160,4 +160,25 @@ class TemplateController extends Controller
 
         return redirect()->route('template.index', $mite_access->id);
     }
+
+    public function showApplyForm(Template $template, Request $request)
+    {
+        // TODO validate date_start and date_end
+        // TODO auth
+
+        $mite_access = $template->miteAccess;
+
+        $services = $mite_access->services()->get();
+        $customers = $mite_access->customers()->with('projects')->get();
+
+        return Inertia::render('Templates/TemplateApply',
+            [
+                'template' => $template,
+                'date_start'=> $request->input('date_start'),
+                'date_end'=> $request->input('date_end'),
+                'services' => $services,
+                'customers' => $customers,
+            ]
+        );
+    }
 }

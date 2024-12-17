@@ -50,7 +50,11 @@ class ContentController extends Controller
             abort(403);
         }
 
-        $content->update($request->validated());
+        $request = $request->validated();
+
+        dd($content);
+
+        $content->update($request);
         $content->save();
 
         $template = $content->template;

@@ -27,6 +27,10 @@ class CalendarController extends Controller
             return redirect('/');
         }
 
+        if ($mite_access->user_id != auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $month = $request->input('month');
 
         // Try to get the month from the request, if it is not set, use the current month

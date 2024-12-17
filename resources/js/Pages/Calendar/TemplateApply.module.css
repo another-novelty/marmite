@@ -1,0 +1,23 @@
+.templateApply {
+
+}
+
+.templates {
+  @apply grid grid-cols-3 gap-4;
+}
+
+.templateButton {
+  @apply py-2 px-4 rounded border-2;
+
+  &.selected {
+    @apply bg-blue-500 text-white;
+  }
+}
+
+.templateDisplay {
+  @apply p-4 border-2 rounded mt-4;
+
+  h3 {
+    @apply text-lg font-bold;
+  }
+}
