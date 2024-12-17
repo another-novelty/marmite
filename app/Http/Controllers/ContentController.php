@@ -52,8 +52,6 @@ class ContentController extends Controller
 
         $request = $request->validated();
 
-        dd($content);
-
         $content->update($request);
         $content->save();
 
