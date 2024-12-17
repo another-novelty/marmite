@@ -6,6 +6,7 @@ use App\Http\Requests\StoreContentRequest;
 use App\Http\Requests\UpdateContentRequest;
 use App\Models\Content;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Ramsey\Uuid\Type\Time;
 
@@ -58,7 +59,8 @@ class ContentController extends Controller
         $template = $content->template;
         $mite_access = $template->miteAccess;
 
-        return redirect()->route('template.edit', [$mite_access->id, $template->id, 'selectedContent' => $content->id]);
+        return Redirect::back()
+            ->with('success', 'Template content updated successfully.');
     }
 
     /**
